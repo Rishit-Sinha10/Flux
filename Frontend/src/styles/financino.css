@@ -1,0 +1,62 @@
+/* Google Fonts Imports */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+
+
+@import "tailwindcss";
+html {
+  scroll-behavior: smooth;
+}
+
+/* Material Icons Setup */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+}
+
+/* Custom Glass Card Component */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+}
+
+/* Emerald Glow Effect */
+.emerald-glow {
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.15);
+}
+
+/* Hero Gradient Background */
+.hero-gradient {
+  background: radial-gradient(circle at 50% -20%, #f1f5f9 0%, #f8f9fa 100%);
+}
+
+/* Smooth Transitions */
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .font-display-lg {
+    font-size: 28px;
+    line-height: 36px;
+    letter-spacing: -0.02em;
+  }
+
+  .text-display-lg {
+    font-size: 28px;
+    line-height: 36px;
+    letter-spacing: -0.02em;
+  }
+}

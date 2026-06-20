@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+    <!-- Preload Clerk JS to improve loading performance -->
+    <link rel="preload" href="https://cdn.clerk.com/clerk.js" as="script" />
+    <!-- Enable CORS for Clerk CDN -->
+    <script defer src="https://cdn.clerk.com/clerk.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Monitor Clerk script loading
+      window.addEventListener('load', () => {
+        console.log('✅ Page loaded');
+        if (window.Clerk) {
+          console.log('✅ Clerk script loaded successfully');
+        } else {
+          console.warn('⚠️ Clerk script not yet available');
+        }
+      });
+      
+      // Network error handler
+      window.addEventListener('error', (event) => {
+        if (event.filename?.includes('clerk')) {
+          console.error('❌ Failed to load Clerk script:', event.error);
+        }
+      });
+    </script>
+  </body>
+</html>

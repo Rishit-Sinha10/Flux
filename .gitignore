@@ -13,4 +13,3 @@ backend/node_modules
 @latest/.vercel
 @latest/dist/
 @latest/node_modules
-backend/src/node_modules/

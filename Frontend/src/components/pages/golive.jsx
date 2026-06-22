@@ -2,9 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Send, Paperclip, Tv2, ChevronDown, Radio, Users, Eye } from "lucide-react";
 import { io } from "socket.io-client";
 import StreamerAISuggestions from "../chatbot/StreamerAISuggestions";
-
 const socket = io("http://localhost:5000");
-
 export default function GoLiveDashboard() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Gaming");
@@ -18,7 +16,7 @@ export default function GoLiveDashboard() {
   const [viewers, setViewers] = useState(0);
   const [streamId, setStreamId] = useState(null);
   const chatEndRef = useRef(null);
-  const { streamKey1, rtmpUrl } = response.data;
+  // ✅ FIXED: Removed undefined 'response' variable — streamKey1 and rtmpUrl were never used
   const currentUser = JSON.parse(localStorage.getItem("user")) || { username: "Streamer" };
   useEffect( () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });

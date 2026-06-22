@@ -2,8 +2,8 @@ import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 // ─── Configuration ────────────────────────────────────────────────────────────
 const TIMEOUT_CONFIG = {
-  initial: 30000, // Increase from 15s to 30s
-  max: 60000,
+  initial: 4000, // Increase from 15s to 30s
+  max: 6000,
 };
 // ─── Token Provider ───────────────────────────────────────────────────────────
 // Clerk tokens cannot be stored in localStorage — they are short-lived JWTs
@@ -141,8 +141,8 @@ apiClient.interceptors.response.use(
     const method = error.config?.method?.toUpperCase();
 
     // ===== TIMEOUT ERROR =====
-    if (code === "ECONNABORTED" || message?.includes("timeout")) {
-      const timing = `${TIMEOUT_CONFIG.initial}ms-${TIMEOUT_CONFIG.max}ms`;
+    if (code === "ECONNABORTED" || message?.includes("")) {
+      const timing = `${TIMEOUT_CONFIG.max}ms - ${TIMEOUT_CONFIG.initial}ms`;
       console.error(`[apiClient] ⏱️  TIMEOUT (${timing}) for ${method} ${url}`);
       console.error("[apiClient] Troubleshooting:");
       console.error("  1. Is backend server running? (npm run dev)");
@@ -215,30 +215,31 @@ apiClient.interceptors.response.use(
 );
 // ─── API helpers ──────────────────────────────────────────────────────────────
 // Profile API - with automatic retry on timeout
+// ✅ FIXED: Backend route is /api/v1/auth/profile (no userId param - extracted from Clerk token)
 export const profileAPI = {
-  getProfile: async (userId) => {
-    return retryableRequest(() => apiClient.get(`/profile/${userId}`));
-  },
-  updateProfile: (userId, data) => apiClient.put(`/profile/${userId}`, data),
+  getProfile: () => retryableRequest(() => apiClient.get(`/auth/profile`)),
+  updateProfile: (data) => apiClient.put(`/auth/profile`, data),
 };
 // Settings API
+// ✅ FIXED: Backend route is /api/v1/auth/settings (no userId param - extracted from Clerk token)
 export const settingsAPI = {
-  getSettings: (userId) => apiClient.get(`/settings/${userId}`),
-  updateSettings: (userId, data) => apiClient.put(`/settings/${userId}`, data),
+  getSettings: () => apiClient.get(`/auth/settings`),
+  updateSettings: (data) => apiClient.put(`/auth/settings`, data),
 };
 // Analytics API - with automatic retry on timeout
+// ✅ FIXED: Backend routes under /api/v1/analytics
 export const analyticsAPI = {
   getAnalytics: (userId, range = "7days") =>
-    retryableRequest(() => apiClient.get(`/profile/analytics/${userId}`, {
-      params: { range }
+    retryableRequest(() => apiClient.get(`/analytics/user/${userId}`, {
+      params: { range },
     })),
   getStreamAnalytics: (streamId) =>
     retryableRequest(() => apiClient.get(`/analytics/stream/${streamId}`)),
   getUserAnalytics: (userId) => 
-    retryableRequest(() => apiClient.get(`/analytics/profile/${userId}`)),
+    retryableRequest(() => apiClient.get(`/analytics/user/${userId}`)),
   getAnalyticsByDateRange: (userId, startDate, endDate) =>
-    retryableRequest(() => apiClient.get(`/analytics/range`, { 
-      params: { userId, startDate, endDate } 
+    retryableRequest(() => apiClient.get(`/analytics/range`, {
+      params: { userId, startDate, endDate },
     })),
   generateReport: (userId) => 
     retryableRequest(() => apiClient.get(`/analytics/report/${userId}`)),
@@ -246,26 +247,34 @@ export const analyticsAPI = {
     apiClient.put(`/analytics/engagement/${streamId}`, data),
 };
 // Payment API
+// ✅ FIXED: Backend routes under /api/v1/payment
 export const paymentAPI = {
-  createPayment: (data) => apiClient.post(`/create`, data),
-  getPaymentHistory: (userId) => apiClient.get(`/history/${userId}`),
-  verifyPayment: (transactionId) => apiClient.get(`/verify/${transactionId}`),
-  getPaymentStats: (userId) => apiClient.get(`/stats/${userId}`),
+  createPayment: (data) => retryableRequest(() => apiClient.post(`/payment/create`, data)),
+  getPaymentHistory: (userId) => retryableRequest(() => apiClient.get(`/payment/history/${userId}`)),
+  verifyPayment: (transactionId) => retryableRequest(() => apiClient.get(`/payment/verify/${transactionId}`)),
+  getPaymentStats: (userId) => retryableRequest(() => apiClient.get(`/payment/stats/${userId}`)),
   updatePaymentStatus: (transactionId, status) =>
-    apiClient.put(`/status/${transactionId}`, {
+    apiClient.put(`/payment/status/${transactionId}`, {
       paymentStatus: status,
     }),
-  deletePayment: (transactionId) => apiClient.delete(`/${transactionId}`),
+  deletePayment: (transactionId) => apiClient.delete(`/payment/${transactionId}`),
 };
-// User API
+// User API (alternative to profileAPI)
 export const userAPI = {
-  getUserProfile: (userId) => apiClient.get(`/user/profile/${userId}`),
-  getUserSettings: (userId) => apiClient.get(`/user/settings/${userId}`),
+  getUserProfile: () => retryableRequest(() => apiClient.get(`/auth/profile`)),
+  getUserSettings: () => retryableRequest(() => apiClient.get(`/auth/settings`)),
 };
+// Follow API
 export const Follow = {
-  getFollow: (userId) => apiClient.get(`/follower/follow/${userId}`),
-  getfollwoing: (userId) => apiClient.get(`/follower/following/${userId}`),
-  getUnfollow: (userId) => apiClient.get(`/follower//Unfollow/${userId}`),
-  getfollwers: (userId) => apiClient.get(`/follower/user/${userId}/followers`),
+  checkFollow: (targetUserId) => 
+    retryableRequest(() => apiClient.get(`/follower/check`, {
+      params: { targetUserId },
+    })),
+  follow: (userId) => apiClient.post(`/follower/follow/${userId}`),
+  unfollow: (userId) => apiClient.delete(`/follower/unfollow/${userId}`),
+  getFollowers: (userId) => 
+    retryableRequest(() => apiClient.get(`/follower/${userId}/followers`)),
+  getFollowing: (userId) => 
+    retryableRequest(() => apiClient.get(`/follower/${userId}/following`)),
 };
 export default apiClient;

@@ -217,42 +217,48 @@ apiClient.interceptors.response.use(
 // Profile API - with automatic retry on timeout
 // ✅ FIXED: Backend route is /api/v1/auth/profile (no userId param - extracted from Clerk token)
 export const profileAPI = {
-  getProfile: () => retryableRequest(() => apiClient.get(`/auth/profile`)),
+  getProfile: (data) => apiClient.get(`/auth/profile`),
   updateProfile: (data) => apiClient.put(`/auth/profile`, data),
 };
 // Settings API
 // ✅ FIXED: Backend route is /api/v1/auth/settings (no userId param - extracted from Clerk token)
 export const settingsAPI = {
-  getSettings: () => apiClient.get(`/auth/settings`),
+  getSettings: (data) => apiClient.get(`/auth/settings`),
   updateSettings: (data) => apiClient.put(`/auth/settings`, data),
 };
 // Analytics API - with automatic retry on timeout
 // ✅ FIXED: Backend routes under /api/v1/analytics
 export const analyticsAPI = {
+  // Get aggregate analytics for user (all streams)
   getAnalytics: (userId, range = "7days") =>
-    retryableRequest(() => apiClient.get(`/analytics/user/${userId}`, {
+    apiClient.get(`/analytics/profile/${userId}`, {
       params: { range },
-    })),
+    }),
+  // Get stream-specific analytics
   getStreamAnalytics: (streamId) =>
-    retryableRequest(() => apiClient.get(`/analytics/stream/${streamId}`)),
+    apiClient.get(`/analytics/stream/${streamId}`),
+  // Get detailed user analytics with stats
   getUserAnalytics: (userId) => 
-    retryableRequest(() => apiClient.get(`/analytics/user/${userId}`)),
+    apiClient.get(`/analytics/profile/${userId}`),
+  // Get analytics by date range
   getAnalyticsByDateRange: (userId, startDate, endDate) =>
-    retryableRequest(() => apiClient.get(`/analytics/range`, {
+    apiClient.get(`/analytics/range`, {
       params: { userId, startDate, endDate },
-    })),
+    }),
+  // Generate comprehensive report for user
   generateReport: (userId) => 
-    retryableRequest(() => apiClient.get(`/analytics/report/${userId}`)),
+    apiClient.get(`/analytics/report/${userId}`),
+  // Update engagement metrics for stream
   updateEngagementMetrics: (streamId, data) =>
     apiClient.put(`/analytics/engagement/${streamId}`, data),
 };
 // Payment API
 // ✅ FIXED: Backend routes under /api/v1/payment
 export const paymentAPI = {
-  createPayment: (data) => retryableRequest(() => apiClient.post(`/payment/create`, data)),
-  getPaymentHistory: (userId) => retryableRequest(() => apiClient.get(`/payment/history/${userId}`)),
-  verifyPayment: (transactionId) => retryableRequest(() => apiClient.get(`/payment/verify/${transactionId}`)),
-  getPaymentStats: (userId) => retryableRequest(() => apiClient.get(`/payment/stats/${userId}`)),
+  createPayment: (data) => apiClient.post(`/payment/create`, data),
+  getPaymentHistory: (userId)=> apiClient.get(`/payment/history/${userId}`),
+  verifyPayment: (transactionId) => apiClient.get(`/payment/verify/${transactionId}`),
+  getPaymentStats: (userId) => apiClient.get(`/payment/stats/${userId}`),
   updatePaymentStatus: (transactionId, status) =>
     apiClient.put(`/payment/status/${transactionId}`, {
       paymentStatus: status,
@@ -261,20 +267,20 @@ export const paymentAPI = {
 };
 // User API (alternative to profileAPI)
 export const userAPI = {
-  getUserProfile: () => retryableRequest(() => apiClient.get(`/auth/profile`)),
-  getUserSettings: () => retryableRequest(() => apiClient.get(`/auth/settings`)),
+  getUserProfile: () => apiClient.get(`/auth/profile`),
+  getUserSettings: () => apiClient.get(`/auth/settings`),
 };
 // Follow API
 export const Follow = {
   checkFollow: (targetUserId) => 
-    retryableRequest(() => apiClient.get(`/follower/check`, {
+   apiClient.get(`/follower/check`, {
       params: { targetUserId },
-    })),
+    }),
   follow: (userId) => apiClient.post(`/follower/follow/${userId}`),
   unfollow: (userId) => apiClient.delete(`/follower/unfollow/${userId}`),
   getFollowers: (userId) => 
-    retryableRequest(() => apiClient.get(`/follower/${userId}/followers`)),
+    apiClient.get(`/follower/${userId}/followers`),
   getFollowing: (userId) => 
-    retryableRequest(() => apiClient.get(`/follower/${userId}/following`)),
+    apiClient.get(`/follower/${userId}/following`),
 };
 export default apiClient;

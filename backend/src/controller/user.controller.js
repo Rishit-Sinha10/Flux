@@ -133,9 +133,13 @@ export const updateProfile = async (req, res) => {
       ...(avatarUrl && { avatarUrl }),
       ...(username && { username }),
     };
+    // ⏱️ FIXED: Add maxTimeMS timeout to prevent hanging on slow MongoDB
     const user = await User.findOneAndUpdate({ clerkId }, updateData, {
       new: true,
-    }).select("-password");
+    })
+      .select("-password")
+      .maxTimeMS(5000)
+      .exec();
 
     if (!user) {
       return res.status(404).json({
@@ -175,6 +179,7 @@ export const updateSettings = async (req, res) => {
 
     const { notifications, settings } = req.body;
 
+    // ⏱️ FIXED: Add maxTimeMS timeout to prevent hanging on slow MongoDB
     const user = await User.findOneAndUpdate(
       { clerkId },
       {
@@ -182,7 +187,10 @@ export const updateSettings = async (req, res) => {
         ...(settings && { settings }),
       },
       { new: true },
-    ).select("-password");
+    )
+      .select("-password")
+      .maxTimeMS(5000)
+      .exec();
 
     if (!user) {
       return res.status(404).json({
@@ -230,6 +238,7 @@ export const generateAPIKey = async (req, res) => {
 
     const apiKey = randomBytes(32).toString("hex");
 
+    // ⏱️ FIXED: Add maxTimeMS timeout to prevent hanging on slow MongoDB
     const user = await User.findOneAndUpdate(
       { clerkId },
       {
@@ -242,7 +251,10 @@ export const generateAPIKey = async (req, res) => {
         },
       },
       { new: true },
-    ).select("-password");
+    )
+      .select("-password")
+      .maxTimeMS(5000)
+      .exec();
 
     if (!user) {
       return res.status(404).json({

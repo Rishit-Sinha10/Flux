@@ -210,7 +210,9 @@ export const updatePaymentStatus = async (req, res) => {
       { transactionId },
       { paymentStatus },
       { new: true },
-    ).maxTimeMS(5000);
+    )
+      .maxTimeMS(5000)
+      .exec();
     if (!updatedPayment) {
       return res.status(404).json({
         success: false,

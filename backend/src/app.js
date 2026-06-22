@@ -42,6 +42,25 @@ app.use(requestLogger);
 app.use(requestTimeoutGuard(30000));
 // ✅ Clerk authentication middleware (MUST be before routes)
 app.use(clerkMiddleware());
+// ✅ NEW: Global response timeout — guarantee response within 8 seconds
+app.use((req, res, next) => {
+  res.setTimeout(8000, () => {
+    if (!res.headersSent) {
+      console.error(
+        `⏰ [express-timeout] Request to ${req.method} ${req.path} timed out after 8s`
+      );
+      res.status(408).json({
+        success: false,
+        message: "Request timeout — backend took too long to respond",
+        code: "REQUEST_TIMEOUT",
+        path: req.path,
+        method: req.method,
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+  next();
+});
 // ✅ NEW: Check if MongoDB is connected before processing API calls
 app.use(checkDBConnection);
 // ==================== ROUTES ====================

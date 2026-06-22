@@ -31,9 +31,9 @@ export const createAnalytics = async (req, res) => {
     }
 
     // Check if analytics already exists for this stream
-    const existingAnalytics = await Analytics.findOne({ streamId }).maxTimeMS(
-      5000,
-    );
+    const existingAnalytics = await Analytics.findOne({ streamId })
+      .maxTimeMS(5000)
+      .exec();
 
     if (existingAnalytics) {
       // Update existing record
@@ -50,7 +50,9 @@ export const createAnalytics = async (req, res) => {
           engagementRate: engagementRate || existingAnalytics.engagementRate,
         },
         { new: true },
-      );
+      )
+        .maxTimeMS(5000)
+        .exec();
 
       return res.status(200).json({
         success: true,
@@ -112,7 +114,8 @@ export const getStreamAnalytics = async (req, res) => {
       .maxTimeMS(5000)
       .lean() // ✅ Optimization: Read-only query
       .populate("userId", "name email")
-      .populate("streamId", "title category");
+      .populate("streamId", "title category")
+      .exec();
 
     if (!analytics) {
       return res.status(404).json({
@@ -153,7 +156,9 @@ export const getUserAnalytics = async (req, res) => {
     // ✅ Convert Clerk userId to MongoDB ObjectId if needed
     let mongoUserId = userId;
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      const user = await User.findOne({ clerkId: userId }).maxTimeMS(5000);
+      const user = await User.findOne({ clerkId: userId })
+        .maxTimeMS(5000)
+        .exec();
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -254,7 +259,9 @@ export const getAnalyticsByDateRange = async (req, res) => {
     let mongoUserId = userId;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
-      const user = await User.findOne({ clerkId: userId }).maxTimeMS(5000);
+      const user = await User.findOne({ clerkId: userId })
+        .maxTimeMS(5000)
+        .exec();
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -411,7 +418,9 @@ export const generateAnalyticsReport = async (req, res) => {
       // This is a Clerk ID (string), find the MongoDB user
       console.log("🔍 [analytics] Converting Clerk ID to MongoDB ID:", userId);
       const clerkLookupStart = Date.now();
-      const user = await User.findOne({ clerkId: userId }).maxTimeMS(5000);
+      const user = await User.findOne({ clerkId: userId })
+        .maxTimeMS(5000)
+        .exec();
       timings.clerkUserLookup = Date.now() - clerkLookupStart;
       console.log(
         `⏱️  [analytics] Clerk user lookup took ${timings.clerkUserLookup}ms`,

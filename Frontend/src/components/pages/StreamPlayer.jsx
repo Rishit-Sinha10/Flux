@@ -2,12 +2,23 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 export default function Dashboard() {
   const [streams, setStreams] = useState([]);
-  const navigate=useNavigate();  
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchStreams = async () => {
-      const res = await fetch("http://localhost:5000/api/streams/live");
-      const data = await res.json();
-      setStreams(data);
+      try {
+        const res = await fetch("http://localhost:5000/api/v1/streams/live");
+        if (!res.ok) {
+          console.error("Failed to fetch streams:", res.status);
+          setStreams([]);
+          return;
+        }
+        const data = await res.json();
+        // ✅ FIXED: Handle both array response and object responses
+        setStreams(Array.isArray(data) ? data : data.streams || []);
+      } catch (error) {
+        console.error("Error fetching live streams:", error);
+        setStreams([]);
+      }
     };
     fetchStreams();
   }, []);
@@ -16,7 +27,7 @@ export default function Dashboard() {
       {streams.map((stream) => (
         <div
           key={stream._id}
-          onClick={() => navigate(`/stream/${stream._id}`)}  // 👈 HERE
+          onClick={() => navigate(`/stream/${stream._id}`)} // 👈 HERE
           className="bg-white shadow-lg rounded-2xl p-4 hover:scale-105 transition cursor-pointer"
         >
           <img
@@ -24,9 +35,7 @@ export default function Dashboard() {
             className="rounded-xl mb-3"
           />
           <h2 className="text-lg font-bold">{stream.title}</h2>
-          <p className="text-gray-500">
-            {stream.creator.username}
-          </p>
+          <p className="text-gray-500">{stream.creator.username}</p>
           <p className="text-red-500 font-semibold">
             🔴 {stream.viewers} watching
           </p>

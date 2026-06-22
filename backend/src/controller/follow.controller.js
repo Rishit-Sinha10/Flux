@@ -74,6 +74,36 @@ export const getUnfollow = async (req, res, err, next) => {
     });
   }
 };
+// Check if current user follows another user
+export const checkFollowStatus = async (req, res) => {
+  try {
+    const { userId, targetUserId } = req.query;
+
+    if (!userId || !targetUserId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId and targetUserId are required",
+      });
+    }
+
+    const following = await FollowerRelationShip.findOne({
+      follower: userId,
+      creator: targetUserId,
+      isActive: true,
+    });
+
+    res.json({
+      success: true,
+      isFollowing: !!following,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 export const getFollowers = async (req, res) => {
   try {
     const UserId = req.user.params();

@@ -35,7 +35,6 @@ setupStreamSockets(io);
 nms.on("prePublish", (id, StreamPath, args) => {
   console.log("Stream started:", StreamPath);
 });
-
 nms.on("donePublish", (id, StreamPath, args) => {
   console.log("Stream ended:", StreamPath);
 });

@@ -10,10 +10,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
     firstName: {
       type: String,
       default: "",
@@ -78,7 +74,7 @@ const userSchema = new mongoose.Schema(
     },
     lastseen: {
       type: Date,
-      default: false,
+      default: null,
     },
     security: {
       lastLogin: {

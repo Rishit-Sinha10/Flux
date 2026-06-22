@@ -5,12 +5,6 @@ const TIMEOUT_CONFIG = {
   initial: 30000, // Increase from 15s to 30s
   max: 60000,
 };
-const RETRY_CONFIG = {
-  maxRetries: 3,
-  initialDelay: 1000, // 1 second
-  maxDelay: 5000, // 5 seconds max delay
-  backoffMultiplier: 2,
-};
 // ─── Token Provider ───────────────────────────────────────────────────────────
 // Clerk tokens cannot be stored in localStorage — they are short-lived JWTs
 // that must be fetched fresh from Clerk on each request.
@@ -26,11 +20,9 @@ const RETRY_CONFIG = {
 let _getClerkToken = null;
 let _cachedToken = null;
 let _tokenFetchPromise = null;
-
 export const setClerkTokenProvider = (fn) => {
   _getClerkToken = fn;
 };
-
 /**
  * Get Clerk token with smart caching
  * Reduces repeated getToken() calls which can take 1-3 seconds each
@@ -89,49 +81,6 @@ const getClerkTokenWithCache = async () => {
 
   return _tokenFetchPromise;
 };
-
-// ─── Retry Mechanism ──────────────────────────────────────────────────────────
-/**
- * Wrapper to add automatic retry logic with exponential backoff
- * Retries on: timeout, network errors, and 5xx server errors
- */
-const retryableRequest = async (requestFn, retryCount = 0) => {
-  try {
-    return await requestFn();
-  } catch (error) {
-    const isRetryable =
-      error.code === "ECONNABORTED" || // Timeout
-      error.code === "ECONNREFUSED" || // Connection refused
-      error.code === "ETIMEDOUT" || // Timeout
-      error.message?.includes("timeout") ||
-      (error.response?.status >= 500 && error.response?.status < 600); // 5xx errors
-
-    if (isRetryable && retryCount < RETRY_CONFIG.maxRetries) {
-      const delay = Math.min(
-        RETRY_CONFIG.initialDelay *
-          Math.pow(RETRY_CONFIG.backoffMultiplier, retryCount),
-        RETRY_CONFIG.maxDelay,
-      );
-
-      console.warn(
-        `[apiClient] ⚠️  Retry ${retryCount + 1}/${RETRY_CONFIG.maxRetries} after ${delay}ms — ${error.code || error.message}`,
-      );
-
-      await new Promise((resolve) => setTimeout(resolve, delay));
-
-      // Increase timeout on subsequent retries
-      const newTimeout = Math.min(
-        TIMEOUT_CONFIG.initial + retryCount * 5000,
-        TIMEOUT_CONFIG.max,
-      );
-
-      return retryableRequest(() => requestFn(newTimeout), retryCount + 1);
-    }
-
-    throw error;
-  }
-};
-
 // ─── Axios instance ───────────────────────────────────────────────────────────
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -213,7 +162,6 @@ apiClient.interceptors.response.use(
         isTimeout: true,
       });
     }
-
     // ===== 401 UNAUTHORIZED =====
     if (status === 401) {
       if (!error.config._isRetry) {

@@ -9,7 +9,6 @@ export default function Dashboard() {
       const data = await res.json();
       setStreams(data);
     };
-
     fetchStreams();
   }, []);
   return (

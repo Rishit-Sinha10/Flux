@@ -65,7 +65,7 @@ const Sidebar = ({ isCollapsed }) => {
         {/* User Profile & Footer */}
         <div className="p-4 border-t border-gray-100 space-y-3 bg-gray-50">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
-            <UserButton afterSignOutUrl="/" />
+            <UserAvatar afterSignOutUrl="/" />
             <div className="flex flex-col min-w-0 overflow-hidden">
                <span className="text-xs font-semibold text-gray-900 truncate">My Profile</span>
                <span className="text-[10px] text-gray-400">Settings</span>

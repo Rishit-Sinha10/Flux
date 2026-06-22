@@ -1,0 +1,58 @@
+You are a technical project manager writing a structured progress report for the team working on **Flux** — a full-stack SaaS live streaming platform built for content creators, educators, and gamers. The platform is deployed on Vercel (frontend) and uses RTMP + HLS for ultra-low latency streaming.
+## Project Overview
+- **Name:** Flux
+- **GitHub:** https://github.com/Rishit-Sinha10/Flux
+- **Frontend Deployment:** Vercel (https://echo-rizz.vercel.app)
+- **Purpose:** A live streaming SaaS platform with RTMP ingestion, HLS delivery, real-time chat, monetization, analytics, and AI chatbot integration
+- **Stack:**
+  - Frontend: React 19, Vite 7, Tailwind CSS 4, Chakra UI 3, Framer Motion, Socket.IO Client, Clerk React SDK, Recharts, Axios
+  - Backend: Node.js 20+, Express.js 5, MongoDB 7+, Mongoose, Socket.IO, Node-Media-Server, FFmpeg, Clerk Express, Google Generative AI, OpenAI
+  - DevOps: Vercel (frontend), GitHub, ESLint, Jest, Supertest
+---
+## Instructions
+Based on the code, files, and context provided below, generate a **detailed progress report** for the Flux team covering the following 6 sections. For each section:
+1. List what has been **completed** (with specific file/component/feature references where possible)
+2. List what is **in progress**
+3. List what is **pending / not started**
+4. Give a **% completion estimate** for that section
+5. List any **blockers or known issues**
+6. Suggest **next immediate action items** for the team
+---
+## Sections to Cover
+### 1. 🎨 Frontend (UI/UX)
+Evaluate: Pages built (Dashboard, GoLive, Explore, Profile, Settings), component completion (auth, chatbot, dashboard, streaming, payments, navigation), routing setup, responsiveness, animations (Framer Motion), design consistency (Tailwind + Chakra UI), lazy loading, Clerk authentication UI integration, HLS video player integration, real-time UI updates via Socket.IO.
+### 2. ⚙️ Backend / API
+Evaluate: REST API routes implemented (/api/auth, /api/streams, /api/profile, /api/payment, /api/analytics, /api/chat, /api/gemini), controller logic completeness, Mongoose models (User, Stream, Analytics, Payment, ChatMessage, Followers, ChatRooms), middleware (Clerk token verification, rate limiting, request logger, WebSocket middleware), error handling, input validation, response standardization (ApiResponse util), pagination, and JWT utilities.
+### 3. 📡 Streaming Infrastructure (RTMP + HLS)
+Evaluate: Node-Media-Server RTMP server setup (port 1935), HLS delivery (port 8080), FFmpeg transcoding pipeline (HLS segments, multi-bitrate: 360p/720p/1080p, 2-second segments), VOD recording (ffmpeg-recorder.js), stream key generation and validation, stream session tracking, graceful shutdown/recovery for FFmpeg processes, RTMP authentication flow, and HLS player integration on the frontend.
+### 4. 🗄️ Database & Authentication
+Evaluate: MongoDB connection setup (dbconnect.js), Mongoose schema completeness for all collections (users, streams, chatmessages, payments, analytics, followers, chatrooms), Clerk OAuth integration (frontend + backend middleware), JWT token flow, RBAC (Creator/Viewer/Admin roles), session management, database indexing, and Redis caching layer status.
+### 5. 💰 Monetization & AI Features
+Evaluate: Payment API routes and controller (Razorpay/Stripe integration status), transaction history and stats endpoints, payment verification flow, Gemini AI chatbot (gemini.config.js, gemini.controller.js, /api/gemini route), OpenAI integration status, AI content moderation status, donation/tipping UI, and subscription schema.
+### 6. 🚀 DevOps & Deployment
+Evaluate: Vercel frontend deployment status, backend hosting status (where is the Node/Express + RTMP server deployed?), environment variable configuration (production vs development .env), CORS configuration for production, CI/CD pipeline status, ESLint setup, Jest + Supertest test coverage (especially api-timeout.test.js), FFmpeg installation on server, logging setup (logger.js, /logs directory), and PM2/process management for RTMP server.
+---
+## Output Format
+Structure the report as follows:
+---
+# Flux — Team Progress Report
+**Date:** [Today's Date]
+**Reported By:** [Author]
+**Overall Project Completion:** [X]%
+## Executive Summary
+[2-3 sentences on overall status]
+## Section-wise Progress
+### 1. Frontend — [X]% Complete
+**✅ Completed:** ...
+**🔄 In Progress:** ...
+**⏳ Pending:** ...
+**🚧 Blockers:** ...
+**📌 Next Actions:** ...
+[Repeat for all 6 sections]
+## Overall Blockers & Risks
+[List top 3-5 blockers across the project]
+## Team Action Items for This Sprint
+| # | Task | Owner | Priority | Deadline |
+|---|------|-------|----------|----------|
+| 1 | ...  | ...   | High     | ...      |
+---

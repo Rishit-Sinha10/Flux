@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react'
-
 /**
  * SmartSearchBar - Advanced search with filters and smart suggestions
  */
@@ -46,12 +45,10 @@ export default function SmartSearchBar({
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     className="w-full px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
                 />
-
                 {/* Search Icon */}
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
                     🔍
                 </div>
-
                 {/* Suggestions */}
                 {showSuggestions && suggestions.length > 0 && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
@@ -67,18 +64,6 @@ export default function SmartSearchBar({
                     </div>
                 )}
             </div>
-
-            {/* Filter Button */}
-            <button
-                onClick={() => setShowFilters(!showFilters)}
-                className={`px-3 py-1.5 text-xs rounded-lg font-medium transition flex items-center gap-1 shadow-sm ${showFilters
-                        ? "bg-indigo-600 text-white hover:bg-indigo-700"
-                        : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                    }`}
-            >
-                ⚙
-            </button>
-
         </div>
     )
 }

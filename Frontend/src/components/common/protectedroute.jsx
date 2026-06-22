@@ -31,13 +31,11 @@ export default function ProtectedRoute({ children }) {
 			</div>
 		)
 	}
-	
 	// ❌ STEP 2: User NOT signed in with Clerk
 	if (!isSignedIn) {
 		console.log('[ProtectedRoute] User not signed in, redirecting to login')
 		return <Navigate to="/login" replace />
 	}
-	
 	// ✅ STEP 3: User IS signed in with Clerk
 	// ✨ NEW: Render dashboard immediately while profile loads in background
 	console.log('[ProtectedRoute] ✅ User signed in with Clerk, rendering dashboard')

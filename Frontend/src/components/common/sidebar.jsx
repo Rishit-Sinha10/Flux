@@ -28,14 +28,13 @@ const Sidebar = ({ isCollapsed }) => {
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-red-100 flex-shrink-0">
             <Video size={18} />
           </div>
-          <span className="text-xl font-bold tracking-tight text-gray-900">StreamX</span>
+          <span className="text-xl font-bold tracking-tight text-gray-900">Flux</span>
         </div>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1 flex-1 px-4 py-4 overflow-y-auto">
           {navItems.map((item, i) => {
             const isActive = location.pathname === item.path;
-
             return (
               <button
                 key={i}
@@ -63,7 +62,6 @@ const Sidebar = ({ isCollapsed }) => {
             Help & Support
           </button>
         </nav>
-
         {/* User Profile & Footer */}
         <div className="p-4 border-t border-gray-100 space-y-3 bg-gray-50">
           <div className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-100 shadow-sm">

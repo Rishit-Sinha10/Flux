@@ -42,16 +42,10 @@ export default function Login() {
   }
 
   return (
-    <AuthLayout
-      title="Welcome Back"
-      subtitle="Sign in to your account"
-    >
+    <AuthLayout title="Welcome Back" subtitle="Sign in to your account">
       <div className="space-y-6">
         {/* 🔑 Clerk Authentication (Recommended) */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <ClerkPopup />
         </motion.div>
 
@@ -60,7 +54,9 @@ export default function Login() {
             <div className="w-full border-t border-gray-300/30"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white/5 text-gray-400">Or continue with email</span>
+            <span className="px-2 bg-white/5 text-gray-400">
+              Or continue with email
+            </span>
           </div>
         </div>
 
@@ -72,10 +68,15 @@ export default function Login() {
           className="text-center p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg"
         >
           <p className="text-sm text-gray-600 mb-3">
-            Email/password login is deprecated. Please use the authentication button above.
+            Email/password login is deprecated. Please use the authentication
+            button above.
           </p>
           <button
-            onClick={() => alert("Email login is no longer available. Please use the Sign In button above.")}
+            onClick={() =>
+              alert(
+                "Email login is no longer available. Please use the Sign In button above.",
+              )
+            }
             className="w-full bg-gray-400 hover:bg-gray-500 text-white py-2 rounded-lg text-sm cursor-not-allowed opacity-75"
             disabled
           >
@@ -87,7 +88,10 @@ export default function Login() {
         <div className="text-center">
           <p className="text-gray-600 text-sm">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-indigo-600 hover:text-indigo-700 font-medium">
+            <Link
+              to="/signup"
+              className="text-indigo-600 hover:text-indigo-700 font-medium"
+            >
               Sign up here
             </Link>
           </p>

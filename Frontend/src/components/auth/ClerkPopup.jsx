@@ -11,7 +11,7 @@ export default function ClerkPopup() {
   return (
     <SignInButton mode="modal">
       <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-        Continue with Clerk
+        Sign In
       </button>
     </SignInButton>
   );

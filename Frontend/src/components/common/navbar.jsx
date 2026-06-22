@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 export default function Navbar({ isCollapsed, setIsCollapsed }) {
   return (
     <nav className="w-full bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm h-16">
-      
       {/* LEFT - Toggle */}
       <div className="flex items-center gap-2 w-12 flex-shrink-0">
         <button

@@ -1,4 +1,4 @@
-# StreamFlow - Live Streaming Platform
+# Flux - Live Streaming Platform
 
 <div align="center">
 
@@ -16,23 +16,29 @@
 ---
 
 ## Overview
-**StreamFlow** is a full-stack SaaS live streaming platform designed for content creators, streamers, and online educators to broadcast video content, engage viewers in real-time, process payments, and track comprehensive performance analytics.
+
+**Flux** is a full-stack SaaS live streaming platform designed for content creators, streamers, and online educators to broadcast video content, engage viewers in real-time, process payments, and track comprehensive performance analytics.
 
 ### Problem Statement
+
 Content creators lack a modern, scalable platform that combines:
+
 - Low-latency RTMP streaming with reliable recording
 - Real-time audience engagement through chat and notifications
 - Integrated monetization and payment processing
 - Deep analytics to understand audience behavior and growth
 
-### Why StreamFlow?
-We built StreamFlow to provide creators with **enterprise-grade streaming infrastructure** without the enterprise complexity. The platform prioritizes:
+### Why Flux?
+
+We built Flux to provide creators with **enterprise-grade streaming infrastructure** without the enterprise complexity. The platform prioritizes:
+
 - **Creator Experience**: Simple one-click "Go Live" workflows
 - **Viewer Experience**: Ultra-low latency chat, personalized feeds, frictionless discovery
 - **Monetization**: Built-in payment processing, viewer donations, subscription support
 - **Insights**: Real-time analytics, engagement tracking, growth metrics
 
 ### Target Users
+
 - **Content Creators** seeking accessible streaming infrastructure
 - **Online Educators** conducting live classes and workshops
 - **Gaming Streamers** requiring low-latency broadcasting
@@ -40,17 +46,19 @@ We built StreamFlow to provide creators with **enterprise-grade streaming infras
 - **Enterprise** teams hosting internal webinars and training
 
 ### Key Value Propositions
+
 ✨ **Low-Latency Streaming** — RTMP ingestion with sub-second viewer latency via HLS  
 💰 **Built-in Monetization** — Integrated payment processing and viewer tipping  
 📊 **Real-time Analytics** — Live viewer metrics, engagement tracking, growth insights  
 🔐 **Enterprise Security** — OAuth authentication via Clerk, role-based access control  
-⚡ **High Scalability** — Microservices-ready architecture, horizontal scaling support  
+⚡ **High Scalability** — Microservices-ready architecture, horizontal scaling support
 
 ---
 
 ## Features
 
 ### Streaming & Broadcasting
+
 - **RTMP Server** — Production-grade RTMP ingestion on port 1935
 - **HLS Live Streaming** — Multi-bitrate adaptive streaming for viewers
 - **Automatic Recording** — FFmpeg-based VOD capture with configurable quality
@@ -58,35 +66,41 @@ We built StreamFlow to provide creators with **enterprise-grade streaming infras
 - **Viewer Analytics** — Real-time viewer count, peak concurrent viewers, engagement metrics
 
 ### Real-time Engagement
+
 - **Live Chat** — WebSocket-powered instant messaging with moderation
 - **Viewer Metrics** — Live dashboard showing concurrent viewers, watch time, engagement
 - **Chat Moderation** — Admin controls for chat filtering and user blocking
 - **Stream Notifications** — Alert system for follow notifications and stream alerts
 
 ### Monetization
+
 - **Payment Processing** — Integrated payment gateway with transaction history
 - **Viewer Donations** — Support viewers tipping creators during streams
 - **Payment Analytics** — Revenue tracking, transaction reporting, financial dashboards
 - **Subscription Ready** — Database schema for recurring subscription management
 
 ### Creator Tools
+
 - **Profile Management** — Customizable creator profiles with bio, avatar, links
 - **Settings Panel** — Theme preferences, notification controls, privacy settings
 - **Stream Configuration** — RTMP URL/key generation, stream settings
 - **Follow System** — Creator follow/unfollow relationships with notifications
 
 ### Discovery & Explore
+
 - **Live Stream Discovery** — Browse active streams with filtering
 - **Creator Profiles** — View creator statistics and content library
 - **Stream Categorization** — Organize content by category and tags
 - **Search & Filter** — Find streams and creators quickly
 
 ### AI Integration
+
 - **Gemini AI Chatbot** — Powered by Google Generative AI for intelligent chat responses
 - **Content Moderation** — AI-assisted detection of problematic content
 - **Chat Analytics** — Sentiment analysis and engagement insights
 
 ### Performance & Optimization
+
 - **Lazy Loading** — React components load on demand for faster initial page load
 - **Code Splitting** — Vite builds optimized bundles with automatic code splitting
 - **Connection Pooling** — MongoDB connection pooling for efficient database operations
@@ -98,62 +112,67 @@ We built StreamFlow to provide creators with **enterprise-grade streaming infras
 ## Tech Stack
 
 ### Frontend
-| Technology | Purpose | Version |
-|---|---|---|
-| **React** | UI component framework | 19.x |
-| **Vite** | Build tooling & dev server | 7.x |
-| **Tailwind CSS** | Utility-first styling | 4.x |
-| **Chakra UI** | Component library | 3.x |
-| **Framer Motion** | Animation library | 12.x |
-| **React Router** | Client-side routing | 6.x |
-| **Socket.IO Client** | WebSocket communication | 4.x |
-| **Axios** | HTTP client | Latest |
-| **Lucide React** | Icon library | 0.5x |
-| **Recharts** | Data visualization | 3.x |
-| **Clerk React SDK** | Authentication | 6.x |
+
+| Technology           | Purpose                    | Version |
+| -------------------- | -------------------------- | ------- |
+| **React**            | UI component framework     | 19.x    |
+| **Vite**             | Build tooling & dev server | 7.x     |
+| **Tailwind CSS**     | Utility-first styling      | 4.x     |
+| **Chakra UI**        | Component library          | 3.x     |
+| **Framer Motion**    | Animation library          | 12.x    |
+| **React Router**     | Client-side routing        | 6.x     |
+| **Socket.IO Client** | WebSocket communication    | 4.x     |
+| **Axios**            | HTTP client                | Latest  |
+| **Lucide React**     | Icon library               | 0.5x    |
+| **Recharts**         | Data visualization         | 3.x     |
+| **Clerk React SDK**  | Authentication             | 6.x     |
 
 ### Backend
-| Technology | Purpose | Version |
-|---|---|---|
-| **Express.js** | Web framework | 5.x |
-| **Node.js** | Runtime | 20+ |
-| **MongoDB** | NoSQL database | 7.0+ |
-| **Mongoose** | MongoDB ODM | 9.x |
-| **Socket.IO** | Real-time communication | 4.x |
-| **Node-Media-Server** | RTMP server | 4.x |
-| **FFmpeg** | Media processing | 6.x |
-| **Clerk Express** | Backend authentication | 2.x |
-| **Google Generative AI** | AI chatbot | 1.x |
-| **OpenAI** | Language models | 6.x |
-| **Bcrypt** | Password hashing | 6.x |
-| **JWT** | Token signing | 9.x |
-| **Express Rate Limit** | Rate limiting | 8.x |
-| **Nodemon** | Development auto-reload | 3.x |
+
+| Technology               | Purpose                 | Version |
+| ------------------------ | ----------------------- | ------- |
+| **Express.js**           | Web framework           | 5.x     |
+| **Node.js**              | Runtime                 | 20+     |
+| **MongoDB**              | NoSQL database          | 7.0+    |
+| **Mongoose**             | MongoDB ODM             | 9.x     |
+| **Socket.IO**            | Real-time communication | 4.x     |
+| **Node-Media-Server**    | RTMP server             | 4.x     |
+| **FFmpeg**               | Media processing        | 6.x     |
+| **Clerk Express**        | Backend authentication  | 2.x     |
+| **Google Generative AI** | AI chatbot              | 1.x     |
+| **OpenAI**               | Language models         | 6.x     |
+| **Bcrypt**               | Password hashing        | 6.x     |
+| **JWT**                  | Token signing           | 9.x     |
+| **Express Rate Limit**   | Rate limiting           | 8.x     |
+| **Nodemon**              | Development auto-reload | 3.x     |
 
 ### Database
-| Component | Technology |
-|---|---|
-| **Primary Database** | MongoDB (NoSQL) |
-| **Connection Manager** | Mongoose ODM |
-| **Caching Layer** | Redis-ready (planned) |
-| **Session Store** | MongoDB sessions |
+
+| Component              | Technology            |
+| ---------------------- | --------------------- |
+| **Primary Database**   | MongoDB (NoSQL)       |
+| **Connection Manager** | Mongoose ODM          |
+| **Caching Layer**      | Redis-ready (planned) |
+| **Session Store**      | MongoDB sessions      |
 
 ### Infrastructure & DevOps
-| Component | Technology |
-|---|---|
-| **Code Quality** | ESLint |
-| **Testing** | Jest, Supertest |
-| **Development** | VSCode, Postman |
+
+| Component            | Technology                        |
+| -------------------- | --------------------------------- |
+| **Code Quality**     | ESLint                            |
+| **Testing**          | Jest, Supertest                   |
+| **Development**      | VSCode, Postman                   |
 | **Deployment Ready** | Docker-compatible, cloud-agnostic |
-| **Version Control** | Git/GitHub |
+| **Version Control**  | Git/GitHub                        |
 
 ### External APIs & Services
-| Service | Purpose |
-|---|---|
-| **Clerk** | OAuth authentication & user management |
-| **Google Generative AI** | AI-powered chatbot responses |
-| **OpenAI** | Advanced language processing |
-| **Razorpay/Stripe** | Payment processing (planned) |
+
+| Service                  | Purpose                                |
+| ------------------------ | -------------------------------------- |
+| **Clerk**                | OAuth authentication & user management |
+| **Google Generative AI** | AI-powered chatbot responses           |
+| **OpenAI**               | Advanced language processing           |
+| **Razorpay/Stripe**      | Payment processing (planned)           |
 
 ---
 
@@ -244,6 +263,7 @@ We built StreamFlow to provide creators with **enterprise-grade streaming infras
 ### Data Flow Diagrams
 
 **Broadcasting Flow:**
+
 ```
 Creator                                      Viewers
    │                                            │
@@ -263,6 +283,7 @@ Creator                                      Viewers
 ```
 
 **Real-time Engagement Flow:**
+
 ```
 Frontend (React)
    │
@@ -288,15 +309,15 @@ Frontend (React)
 
 ### Key Architectural Decisions
 
-| Decision | Rationale |
-|---|---|
-| **Microservices-Ready** | Express server decoupled from media server; easy to scale independently |
-| **RTMP + HLS** | RTMP for low-latency ingest, HLS for viewer compatibility and adaptive bitrate |
-| **MongoDB** | Document-oriented for flexible schema; supports nested relationships |
-| **Socket.IO** | Real-time two-way communication; fallback support for older clients |
-| **Clerk Authentication** | Outsourced auth reduces security burden; OAuth support included |
-| **Stateless API Design** | JWT tokens enable horizontal scaling and load balancing |
-| **Separation of Concerns** | Controllers, models, routes cleanly separated for maintainability |
+| Decision                   | Rationale                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------ |
+| **Microservices-Ready**    | Express server decoupled from media server; easy to scale independently        |
+| **RTMP + HLS**             | RTMP for low-latency ingest, HLS for viewer compatibility and adaptive bitrate |
+| **MongoDB**                | Document-oriented for flexible schema; supports nested relationships           |
+| **Socket.IO**              | Real-time two-way communication; fallback support for older clients            |
+| **Clerk Authentication**   | Outsourced auth reduces security burden; OAuth support included                |
+| **Stateless API Design**   | JWT tokens enable horizontal scaling and load balancing                        |
+| **Separation of Concerns** | Controllers, models, routes cleanly separated for maintainability              |
 
 ---
 
@@ -417,6 +438,7 @@ PES/
 ## Quick Start
 
 ### Prerequisites
+
 - **Node.js** 20+ ([Download](https://nodejs.org))
 - **MongoDB** 7.0+ (Local or [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
 - **FFmpeg** ([Installation Guide](docs/FFMPEG_SETUP.md))
@@ -426,18 +448,21 @@ PES/
 ### Installation
 
 #### 1. Clone Repository
+
 ```bash
 git clone https://github.com/Rishit-Sinha10/P1
 cd P1
 ```
 
 #### 2. Install Backend Dependencies
+
 ```bash
 cd backend/src
 npm install
 ```
 
 #### 3. Install Frontend Dependencies
+
 ```bash
 cd ../../Frontend
 npm install
@@ -446,10 +471,11 @@ npm install
 #### 4. Configure Environment Variables
 
 **Backend** — Create `backend/src/.env`:
+
 ```env
 # Database
-MONGO_URI=mongodb://localhost:27017/StreamFlow
-DB_NAME=StreamFlow
+MONGO_URI=mongodb://localhost:27017/Flux
+DB_NAME=Flux
 
 # Server
 PORT=5000
@@ -479,6 +505,7 @@ LOG_LEVEL=debug
 ```
 
 **Frontend** — Create `Frontend/.env`:
+
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
@@ -487,6 +514,7 @@ NODE_ENV=development
 ```
 
 #### 5. Start MongoDB
+
 ```bash
 # If running locally
 mongod
@@ -497,6 +525,7 @@ mongod
 #### 6. Run Development Servers
 
 **Terminal 1 — Backend:**
+
 ```bash
 cd backend/src
 npm run dev
@@ -506,6 +535,7 @@ npm run dev
 ```
 
 **Terminal 2 — Frontend:**
+
 ```bash
 cd Frontend
 npm run dev
@@ -515,6 +545,7 @@ npm run dev
 #### 7. Build for Production
 
 **Backend:**
+
 ```bash
 cd backend/src
 npm run build  # If build script exists
@@ -522,6 +553,7 @@ npm run build  # If build script exists
 ```
 
 **Frontend:**
+
 ```bash
 cd Frontend
 npm run build
@@ -530,6 +562,7 @@ npm run preview  # Preview production build locally
 ```
 
 ### First Steps
+
 1. Navigate to `http://localhost:5173` in your browser
 2. Sign up with Clerk authentication
 3. Go to Dashboard → Go Live
@@ -543,39 +576,40 @@ npm run preview  # Preview production build locally
 
 ### Backend Configuration
 
-| Variable | Description | Required | Default |
-|---|---|---|---|
-| `MONGO_URI` | MongoDB connection string | Yes | — |
-| `DB_NAME` | Database name | Yes | `StreamFlow` |
-| `PORT` | Express server port | No | `5000` |
-| `NODE_ENV` | Environment (development/production) | No | `development` |
-| `CLERK_SECRET_KEY` | Clerk API secret for backend | Yes | — |
-| `CLERK_FRONTEND_API` | Clerk frontend API endpoint | Yes | — |
-| `RTMP_PORT` | RTMP server ingestion port | No | `1935` |
-| `HLS_PORT` | HLS streaming server port | No | `8080` |
-| `RTMP_STREAM_PATH` | RTMP stream path prefix | No | `/live` |
-| `GEMINI_API_KEY` | Google Generative AI API key | Yes | — |
-| `OPENAI_API_KEY` | OpenAI API key | No | — |
-| `RAZORPAY_KEY_ID` | Razorpay merchant key ID | No | — |
-| `RAZORPAY_SECRET` | Razorpay merchant secret | No | — |
-| `REDIS_URL` | Redis connection string | No | — |
-| `JWT_SECRET` | JWT signing secret (legacy) | No | `default_secret` |
-| `LOG_LEVEL` | Logging level (debug/info/warn/error) | No | `info` |
+| Variable             | Description                           | Required | Default          |
+| -------------------- | ------------------------------------- | -------- | ---------------- |
+| `MONGO_URI`          | MongoDB connection string             | Yes      | —                |
+| `DB_NAME`            | Database name                         | Yes      | `Flux`           |
+| `PORT`               | Express server port                   | No       | `5000`           |
+| `NODE_ENV`           | Environment (development/production)  | No       | `development`    |
+| `CLERK_SECRET_KEY`   | Clerk API secret for backend          | Yes      | —                |
+| `CLERK_FRONTEND_API` | Clerk frontend API endpoint           | Yes      | —                |
+| `RTMP_PORT`          | RTMP server ingestion port            | No       | `1935`           |
+| `HLS_PORT`           | HLS streaming server port             | No       | `8080`           |
+| `RTMP_STREAM_PATH`   | RTMP stream path prefix               | No       | `/live`          |
+| `GEMINI_API_KEY`     | Google Generative AI API key          | Yes      | —                |
+| `OPENAI_API_KEY`     | OpenAI API key                        | No       | —                |
+| `RAZORPAY_KEY_ID`    | Razorpay merchant key ID              | No       | —                |
+| `RAZORPAY_SECRET`    | Razorpay merchant secret              | No       | —                |
+| `REDIS_URL`          | Redis connection string               | No       | —                |
+| `JWT_SECRET`         | JWT signing secret (legacy)           | No       | `default_secret` |
+| `LOG_LEVEL`          | Logging level (debug/info/warn/error) | No       | `info`           |
 
 ### Frontend Configuration
 
-| Variable | Description | Required |
-|---|---|---|
-| `VITE_API_BASE_URL` | Backend API base URL | Yes |
-| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key | Yes |
-| `VITE_SOCKET_URL` | Socket.IO server URL | Yes |
-| `NODE_ENV` | Build environment | No |
+| Variable                     | Description           | Required |
+| ---------------------------- | --------------------- | -------- |
+| `VITE_API_BASE_URL`          | Backend API base URL  | Yes      |
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key | Yes      |
+| `VITE_SOCKET_URL`            | Socket.IO server URL  | Yes      |
+| `NODE_ENV`                   | Build environment     | No       |
 
 ---
 
 ### Core Endpoints
 
 #### User Management
+
 ```
 GET    /api/users/{userId}          # Get user profile
 PUT    /api/users/{userId}          # Update profile
@@ -584,6 +618,7 @@ DELETE /api/users/{userId}/follow   # Unfollow user
 ```
 
 #### Streams
+
 ```
 GET    /api/streams                 # List all streams
 GET    /api/streams/live            # List live streams
@@ -595,6 +630,7 @@ GET    /api/streams/{streamId}/viewers  # Get viewer count
 ```
 
 #### Analytics
+
 ```
 GET    /api/analytics/user          # Get creator analytics
 GET    /api/analytics/stream/{streamId}  # Stream metrics
@@ -603,6 +639,7 @@ POST   /api/analytics/engagement    # Update engagement
 ```
 
 #### Payments
+
 ```
 POST   /api/payments                # Create payment
 GET    /api/payments/history        # Payment history
@@ -611,16 +648,20 @@ POST   /api/payments/verify         # Verify transaction
 ```
 
 #### Chat
+
 ```
 GET    /api/chat/rooms              # List chat rooms
 POST   /api/chat/messages           # Send message
 GET    /api/chat/messages/{roomId}  # Get message history
 DELETE /api/chat/messages/{messageId}  # Delete message
 ```
+
 ### Challenge 1: Real-Time Stream Synchronization
+
 **Problem:** Keeping viewer metrics in sync between RTMP server, HLS output, and database in real-time
 
-**Solution:** 
+**Solution:**
+
 - Node-Media-Server emits session events → Socket.IO broadcasts to all connected clients
 - Database updated asynchronously without blocking stream ingestion
 - Metrics aggregated in frontend with optimistic updates for low-latency UX
@@ -628,9 +669,11 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 **Architecture Impact:** Decoupled real-time layer from storage layer
 
 ### Challenge 2: Low-Latency Broadcasting
+
 **Problem:** Maintaining sub-second latency while supporting adaptive bitrate streaming
 
 **Solution:**
+
 - RTMP direct ingestion (no encoding delay)
 - FFmpeg HLS segmentation with 2-second chunks
 - HTTP/2 push for faster segment delivery
@@ -639,9 +682,11 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 **Trade-off:** Higher bandwidth requirements for live broadcast
 
 ### Challenge 3: Authentication Across Microservices
+
 **Problem:** Verifying user identity across separate RTMP server and API server
 
 **Solution:**
+
 - Clerk JWT tokens validated by Express middleware
 - RTMP stream keys generated and stored in database
 - Mapper function correlates stream key → authenticated user
@@ -649,9 +694,11 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 **Security Benefit:** Prevents unauthorized RTMP stream publishing
 
 ### Challenge 4: Handling Concurrent Viewers at Scale
+
 **Problem:** Database queries bottleneck under high load with thousands of concurrent viewers
 
 **Solution:**
+
 - Redis caching layer for frequently accessed user data
 - Aggregated metrics stored, not individual viewer events
 - Connection pooling with Mongoose
@@ -660,9 +707,11 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 **Scalability Pattern:** Horizontal scaling with load balancer distributing traffic
 
 ### Challenge 5: FFmpeg Recording Reliability
+
 **Problem:** FFmpeg processes crash, leaving incomplete recordings; no recovery mechanism
 
 **Solution:**
+
 - Graceful shutdown handlers that finalize recordings before process exit
 - Automatic process restart with exponential backoff
 - Recording state persisted in database
@@ -676,41 +725,42 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 
 ### Frontend Optimizations
 
-| Optimization | Implementation | Benefit |
-|---|---|---|
-| **Code Splitting** | Vite automatic route-based chunking | 40% reduction in initial JS load |
-| **Lazy Loading** | React.lazy() for page components | Faster Time to Interactive (TTI) |
-| **Image Optimization** | WebP with JPEG fallback | 30% smaller media files |
-| **Caching** | Service Workers for offline support | Reduced server requests |
-| **Minification** | Vite build optimization | 20% smaller bundle size |
-| **CSS Optimization** | Tailwind purging unused styles | 60KB → 15KB CSS final |
+| Optimization           | Implementation                      | Benefit                          |
+| ---------------------- | ----------------------------------- | -------------------------------- |
+| **Code Splitting**     | Vite automatic route-based chunking | 40% reduction in initial JS load |
+| **Lazy Loading**       | React.lazy() for page components    | Faster Time to Interactive (TTI) |
+| **Image Optimization** | WebP with JPEG fallback             | 30% smaller media files          |
+| **Caching**            | Service Workers for offline support | Reduced server requests          |
+| **Minification**       | Vite build optimization             | 20% smaller bundle size          |
+| **CSS Optimization**   | Tailwind purging unused styles      | 60KB → 15KB CSS final            |
 
 ### Backend Optimizations
 
-| Optimization | Implementation | Benefit |
-|---|---|---|
-| **Database Indexing** | MongoDB indices on frequently queried fields | 10x faster queries |
-| **Connection Pooling** | Mongoose pooling (default: 10 connections) | Reduced connection overhead |
-| **Response Caching** | Strategic ETags and Cache-Control headers | Reduced bandwidth |
-| **Query Projection** | Select only required fields | Smaller document payloads |
-| **Rate Limiting** | Express rate limiter (100 req/15min) | DDoS protection |
-| **Compression** | gzip middleware | 60-70% size reduction |
-| **Pagination** | Limit 20 items per page by default | Memory efficiency |
+| Optimization           | Implementation                               | Benefit                     |
+| ---------------------- | -------------------------------------------- | --------------------------- |
+| **Database Indexing**  | MongoDB indices on frequently queried fields | 10x faster queries          |
+| **Connection Pooling** | Mongoose pooling (default: 10 connections)   | Reduced connection overhead |
+| **Response Caching**   | Strategic ETags and Cache-Control headers    | Reduced bandwidth           |
+| **Query Projection**   | Select only required fields                  | Smaller document payloads   |
+| **Rate Limiting**      | Express rate limiter (100 req/15min)         | DDoS protection             |
+| **Compression**        | gzip middleware                              | 60-70% size reduction       |
+| **Pagination**         | Limit 20 items per page by default           | Memory efficiency           |
 
 ### Streaming Optimizations
 
-| Optimization | Implementation | Benefit |
-|---|---|---|
+| Optimization          | Implementation             | Benefit                      |
+| --------------------- | -------------------------- | ---------------------------- |
 | **Multi-bitrate HLS** | 360p, 720p, 1080p profiles | Adaptive to viewer bandwidth |
-| **Segment Size** | 2-second segments | Balance latency vs overhead |
-| **Keyframe Interval** | 2-second GOP | Fast segment boundaries |
-| **Encoder Preset** | FFmpeg preset:fast | CPU efficiency |
+| **Segment Size**      | 2-second segments          | Balance latency vs overhead  |
+| **Keyframe Interval** | 2-second GOP               | Fast segment boundaries      |
+| **Encoder Preset**    | FFmpeg preset:fast         | CPU efficiency               |
 
 ---
 
 ## Security Features
 
 ### Authentication & Authorization
+
 - **OAuth 2.0** via Clerk with social login support (Google, GitHub, etc.)
 - **JWT Token Validation** on every protected endpoint
 - **Role-Based Access Control (RBAC)** — Creator, Viewer, Admin roles
@@ -718,6 +768,7 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 - **Token Expiration** with refresh token rotation
 
 ### Data Protection
+
 - **Password Hashing** with Bcrypt (salt rounds: 10)
 - **HTTPS/TLS** for all API communication
 - **CORS Configuration** restricting origins to trusted domains
@@ -725,6 +776,7 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 - **XSS Prevention** via React's built-in escaping
 
 ### API Security
+
 - **Rate Limiting** — 100 requests per 15 minutes per IP
 - **Input Validation** — Schema validation on all POST/PUT requests
 - **API Key Rotation** — Clerk manages key expiration
@@ -732,6 +784,7 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 - **Error Messages** — Generic errors in production (no stack traces)
 
 ### Infrastructure Security
+
 - **Environment Variables** — Secrets stored in `.env`, never committed
 - **RTMP Stream Keys** — Randomly generated, unique per stream
 - **Webhook Signing** — Clerk webhook signatures verified
@@ -739,27 +792,30 @@ DELETE /api/chat/messages/{messageId}  # Delete message
 - **Audit Logging** — All sensitive operations logged with timestamps
 
 ### Best Practices Implemented
+
 ✓ OWASP Top 10 compliance  
 ✓ Data encryption at rest (MongoDB)  
 ✓ Secure session management  
 ✓ Dependency scanning (automated via GitHub)  
-✓ Security headers (X-Frame-Options, Content-Security-Policy)  
+✓ Security headers (X-Frame-Options, Content-Security-Policy)
 
 ---
+
 ### Environment Setup for Production
 
 **Production `.env`:**
+
 ```env
 # Security
 NODE_ENV=production
 LOG_LEVEL=warn
 
 # Database (MongoDB Atlas)
-MONGO_URI=mongodb+srv://user:secure_password@cluster.mongodb.net/StreamFlow?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://user:secure_password@cluster.mongodb.net/Flux?retryWrites=true&w=majority
 
 # Server
 PORT=5000
-CORS_ORIGIN=https://StreamFlow.vercel.app
+CORS_ORIGIN=https://Flux.vercel.app
 
 # Clerk (Production keys)
 CLERK_SECRET_KEY=sk_live_xxxxx
@@ -786,6 +842,7 @@ SSL_KEY=/path/to/key.pem
 ## Future Improvements
 
 ### Phase 2: Enhanced Monetization
+
 - [ ] **Subscriptions** — Recurring revenue with subscriber-only content
 - [ ] **Donations** — Viewer tipping with custom amounts
 - [ ] **Super Chat** — Paid messages during live streams
@@ -793,6 +850,7 @@ SSL_KEY=/path/to/key.pem
 - [ ] **Revenue Sharing** — Platform split model (70/30)
 
 ### Phase 3: Advanced Analytics
+
 - [ ] **Heatmaps** — Click tracking on stream player
 - [ ] **Audience Insights** — Demographics, location, device tracking
 - [ ] **Revenue Dashboard** — Detailed income analytics
@@ -800,6 +858,7 @@ SSL_KEY=/path/to/key.pem
 - [ ] **A/B Testing Tools** — Title/thumbnail optimization
 
 ### Phase 3: AI & Automation
+
 - [ ] **Auto-captioning** — Real-time transcription (Google Speech-to-Text)
 - [ ] **Content Recommendations** — ML recommendation engine
 - [ ] **Auto-moderation** — AI spam/harassment detection
@@ -807,6 +866,7 @@ SSL_KEY=/path/to/key.pem
 - [ ] **Chat Analysis** — Sentiment tracking and insights
 
 ### Phase 4: Social & Community
+
 - [ ] **Guilds/Communities** — Creator communities
 - [ ] **Collaborative Streams** — Multi-creator co-hosting
 - [ ] **Events Calendar** — Scheduled broadcast planning
@@ -814,12 +874,14 @@ SSL_KEY=/path/to/key.pem
 - [ ] **Community Moderation Tools** — Advanced moderation dashboard
 
 ### Phase 5: Mobile & Native
+
 - [ ] **iOS App** — React Native mobile application
 - [ ] **Android App** — Native Android application
 - [ ] **Mobile Broadcasting** — Stream from mobile devices
 - [ ] **Offline Sync** — Download VODs for offline viewing
 
 ### Phase 6: Enterprise
+
 - [ ] **White-label** — Customizable platform for enterprises
 - [ ] **SLA Support** — 99.9% uptime guarantee
 - [ ] **Custom Integration** — API webhooks and integrations
@@ -833,6 +895,7 @@ SSL_KEY=/path/to/key.pem
 We welcome contributions from the community! Whether you're reporting bugs, suggesting features, or submitting code, here's how to get involved:
 
 ### Getting Started
+
 1. **Fork** the repository on GitHub
 2. **Clone** your fork locally
 3. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
@@ -841,6 +904,7 @@ We welcome contributions from the community! Whether you're reporting bugs, sugg
 6. **Open** a Pull Request with a detailed description
 
 ### Development Workflow
+
 ```bash
 # Install dependencies
 npm install
@@ -860,6 +924,7 @@ git push origin feature/your-feature
 ```
 
 ### Code Standards
+
 - **Naming** — camelCase for variables/functions, PascalCase for components
 - **Comments** — Document complex logic and architectural decisions
 - **Error Handling** — Use try-catch, return meaningful error messages
@@ -867,11 +932,13 @@ git push origin feature/your-feature
 - **Linting** — Run `npm run lint` and fix issues before committing
 
 ### Reporting Issues
+
 - **Bug Reports** — Describe steps to reproduce, expected vs actual behavior
 - **Feature Requests** — Explain use case and why it matters
 - **Security Issues** — Email privately instead of using GitHub issues
 
 ### Pull Request Guidelines
+
 - Reference related issues (#123)
 - Keep PRs focused on single features
 - Include test coverage for new code
@@ -885,6 +952,7 @@ git push origin feature/your-feature
 This project is licensed under the **ISC License** — see [LICENSE](LICENSE) file for details.
 
 ### What This Means
+
 - ✓ You can use this code commercially
 - ✓ You can modify and distribute
 - ✓ You must include license and copyright notice
@@ -900,8 +968,11 @@ This project is licensed under the **ISC License** — see [LICENSE](LICENSE) fi
 - **GitHub** — [@yourusername](https://github.com/rishit-Sinha10)
 - **LinkedIn** — [linkedin.com/in/rishit-sinha-6953ab363](linkedin.com/in/rishit-sinha-6953ab363)
 - **Email** — Sinharishit04@gmail.com
+
 ---
+
 ## Acknowledgments
+
 - **Clerk** — Authentication infrastructure
 - **Google Generative AI** — AI chatbot capabilities
 - **Node-Media-Server** — RTMP server foundation
@@ -922,7 +993,6 @@ This project is licensed under the **ISC License** — see [LICENSE](LICENSE) fi
 [![GitHub Forks](https://img.shields.io/github/forks/rishit-Sinha10/P1?style=social)](https://github.com/rishit-Sinha10/P1)
 [![GitHub Issues](https://img.shields.io/github/issues/rishit-Sinha10/P1?style=flat-square)](https://github.com/rishit-Sinha10/P1/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/rishit-Sinha10/P1?style=flat-square)](https://github.com/rishit-Sinha10/P1)
- 
 
 </div>
 
@@ -931,6 +1001,7 @@ This project is licensed under the **ISC License** — see [LICENSE](LICENSE) fi
 <div align="center">
 
 ### ⭐ If you find this project helpful, please consider giving it a star!
+
 </div>
 
 ---

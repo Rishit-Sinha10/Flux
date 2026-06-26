@@ -1,5 +1,6 @@
 docs/
 node_modules/
+bun.lock/
 vod/
 logs/
 recordings/
@@ -13,3 +14,6 @@ backend/node_modules
 @latest/.vercel
 @latest/dist/
 @latest/node_modules
+backend/src/bun.lock
+backend/src/nginx.rtmp.conf
+.env/

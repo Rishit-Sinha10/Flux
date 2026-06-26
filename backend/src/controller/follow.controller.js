@@ -2,7 +2,7 @@ import User from "../models/User.models.js";
 import { Folllower } from "../models/FollowerRelationShip.models.js";
 export const getFollow = async (req, res, err, next) => {
   try {
-    const followId = req.user.id();
+    const followId = req.auth.userId();
     const followingId = req.param.UserId();
     if (followId === followingId) {
       return res.status(404).json({ msg: "User Could Not Follow Itself" });
@@ -48,7 +48,7 @@ export const getFollow = async (req, res, err, next) => {
 };
 export const getUnfollow = async (req, res, err, next) => {
   try {
-    const followId = req.user.id();
+    const followId = req.auth.userId();
     const followingId = req.param.UserId();
     if (!followId)
       res.status(400).json({

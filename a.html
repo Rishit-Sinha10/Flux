@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+  <video id="video" controls width="800"></video>
+  <script>
+    var video = document.getElementById('video');
+    var hls = new Hls();
+    hls.loadSource('http://localhost:8080/hls/62274970-7afd-4168-8ab2-3eb4fa07a7c3.m3u8');
+    hls.attachMedia(video);
+  </script>
+</body>
+</html>

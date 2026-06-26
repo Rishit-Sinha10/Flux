@@ -56,3 +56,6 @@ Structure the report as follows:
 |---|------|-------|----------|----------|
 | 1 | ...  | ...   | High     | ...      |
 ---
+curl http://localhost:5000/api/v1/profile/user_3FU5ud8m5htfDB8cqlgngqfi2pe  
+curl -X POST http://localhost:5000/api/v1/streams/create -H "Content-Type: application/json" -d "{\"title\":\"My First Gaming Stream\",\"description\":\"Playing Fortnite tonight!\",\"category\":\"Gaming\"}"
+curl http://localhost:5000/api/auth/debug/setup -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zQ29Dc3RxWTBxWG5qVGQyMENXSWx1MmJlWUoiLCJvaWF0IjoxNzgyMjEzMjA4LCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjUxNzMiLCJleHAiOjE3ODIyMTMyNjgsImZ2YSI6Wzc0LC0xXSwiaWF0IjoxNzgyMjEzMjA4LCJpc3MiOiJodHRwczovL2xpdmluZy1tdXR0LTQxLmNsZXJrLmFjY291bnRzLmRldiIsIm5iZiI6MTc4MjIxMzE5OCwic2lkIjoic2Vzc18zRlg1b1JvMnRnanZIZHM1Sk5JT3JhTU5VOW8iLCJzdHMiOiJhY3RpdmUiLCJzdWIiOiJ1c2VyXzNGVTV1ZDhtNWh0ZkRCOGNxbGduZ3FmaTJwZSIsInYiOjJ9.w-KePWU0zDYlopoMn-CvkgWYBlfLWJHi1qzoROhl37RyR3WzuMoZBcA9MX6YTV19fpadl8N3Ep82GzCMhEQ84td2M8qEBGVTprGzE0nSzNIlP6VxObD2qpRbIzIO9ltH7dhuNKznGgcb8GL0zvmi0-QBUYgOn55SyoG9b_aYOqHFYYgCg2UHI4QceuLNA52LoKzU-rjCKkR_2OuLFnD2xOzeGniIuEwf_3aJhKiv77NKjmg7gILS-EXvuH0b0JHI06IPlN06-JZ-YZ9B1FBeLz1fIFCw9RT89yuDReFQMIjfdKJBfk9MNNC8VYwBMzqZP2rmKaMh6NyH6M8-PU4kRA"

@@ -1,0 +1,120 @@
+Now I have a comprehensive understanding of the entire codebase. Let me compile the full roadmap report.
+
+Let me synthesize everything I've found:
+
+Dependency Check:
+- hls.js - NOT in package.json (needed for StreamPlayer)
+- socket.io-client - YES in Frontend package.json (^4.8.3)
+- socket.io - YES in Backend package.json (^4.8.3)
+- video.js - NOT in package.json (but imported in watch.jsx!)
+- No search library (fuse.js etc.)
+- node-media-server - YES in backend
+
+Key Findings:
+1. StreamPlayer.jsx - Is actually a stub for the DASHBOARD page listing streams, not a video player. It does NOT use hls.js, does NOT have a <video> tag.
+2. watch.jsx - Uses video.js (imports it) but video.js is NOT in package.json. This is the actual HLS player component but it won't work because video.js isn't installed.
+3. No backend route for VOD/recordings list - There's /api/v1/streams/creator/:creatorId/recordings but no general /api/v1/vod or recordings browse route. Also no frontend UI for browsing VODs.
+4. No notifications model - There's no Notifications Mongoose model. The User model has notification preferences but no notification delivery mechanism exists.
+5. No search route - No /api/v1/search endpoint in backend. searchbar.jsx is basic frontend-only search with mock suggestions.
+6. No recommendation logic - explore.jsx uses hardcoded mock data; no trending/popular/personalized algorithm.
+7. Auth flow: Clerk OAuth (primary) with JWT fallback. Custom requireAuth middleware decodes Clerk JWTs using jwt-decode. Both Clerk middleware and custom middleware exist.
+8. Socket.io is set up on both backend and frontend.
+
+Let me now write the comprehensive response.
+Now I have a complete picture of the codebase. Here is your comprehensive roadmap:
+CODEBASE HEALTH REPORT
+Overall: ~50% complete. Core auth, UI, and real-time chat work. The streaming pipeline (core feature) has a broken video player path. VOD, search, notifications, and recommendations are missing entirely.
+MISSING DEPENDENCIES
+cd Frontend
+npm install hls.js           # Needed for HLS playback in StreamPlayer
+npm install video.js          # Already imported in watch.jsx but NOT installed!
+hls.js and video.js are both missing from Frontend/package.json. socket.io-client IS already installed.
+COMPLETED FEATURES
+- Clerk OAuth auth flow (login/signup/redirect)
+- User profile CRUD (backend routes + User model)
+- Real-time chat via Socket.IO (viewer count, message delivery, metrics)
+- Stream CRUD (create, end, list live, get by ID)
+- Explore page UI (mock data, category filter, search)
+- Dashboard UI (stats cards, analytics chart, activity feed)
+- Go Live page UI (stream settings, chat panel)
+- Analytics backend (stream/user analytics, date ranges, reports)
+- Payment backend (CRUD + stats + verification)
+- Follow/unfollow backend (partial - buggy implementation)
+- Gemini AI chat integration (both backend + frontend chatbot)
+- FFmpeg recording service (full implementation, writes MP4 + HLS)
+- Custom dark theme Tailwind config
+- Error boundary, toast system, protected routes
+- Social routes (like/share/comment - empty stubs)
+BROKEN / INCOMPLETE FEATURES
+1. StreamPlayer.jsx (Frontend/src/components/pages/StreamPlayer.jsx)
+- Current: It's a stream LISTING component (shows cards of live streams), NOT a video player
+- No <video> tag. No hls.js import.
+- Actually conflicts with watch.jsx which IS the proper HLS player
+2. watch.jsx (Frontend/src/components/profile/watch.jsx)
+- Current: Imports video.js which is NOT installed in package.json
+- Uses hardcoded http://localhost:8080/hls/${streamId}.m3u8
+- Not imported by any route/page (orphaned component)
+3. profile/stream.jsx (Frontend/src/components/profile/stream.jsx)
+- Current: Shows "🎥 Live Stream Player" placeholder text
+- Does NOT embed watch.jsx or any actual video player
+- Fetches from wrong endpoint: /api/streams/${id} (missing /v1/)
+4. No VOD/Recordings UI
+- Backend has GET /api/v1/streams/creator/:creatorId/recordings but:
+- No frontend page to browse recordings
+- No HLS playback for ended streams
+- Recording metadata saved to DB but not surfaced
+5. Notifications System
+- User model has notifications preferences (email, push, marketing)
+- Navbar has Bell icon with red dot
+- NO backend notifications model or delivery mechanism
+- NO Socket.IO event for notifications
+6. Search
+- searchbar.jsx is client-side only, uses availableTags prop (never passed)
+- No /api/v1/search backend route
+- No full-text search on users or streams
+7. Recommendations
+- explore.jsx uses mock data only
+- No trending algorithm
+- No personalized recommendations
+- No backend endpoint for recommended streams
+8. Follower Controller (backend/src/controller/follow.controller.js)
+- Uses req.auth.userId() and req.param.UserId() — these are WRONG methods
+- Should be req.auth.userId and req.params.id
+- Mixes follow variable name with Folllower model import
+- Will crash at runtime
+9. Social Controller (backend/src/controller/Social.controller.js)
+- All six handlers are EMPTY try/catch blocks
+ROADMAP (PRIORITY ORDER)
+P1 — BROKEN (blocks core feature):
+1. Fix StreamPlayer + hls.js integration — Medium: StreamPlayer.jsx needs to become a real HLS player or watch.jsx needs to be wired in. Install hls.js, create a proper HlsPlayer component. Deps: install hls.js
+2. Fix profile/stream.jsx — Easy: wrong API path (/api/streams/ → /api/v1/streams/), missing video player embed
+3. Fix Follow controller — Medium: all 5 functions use wrong req methods, will crash
+P2 — HALF-DONE (needs completion):
+4. VOD recording browser — Medium: New frontend page for browsing recorded streams, consume GET /api/v1/streams/creator/:creatorId/recordings
+5. Notifications backend + delivery — Medium: Create Notification model, Socket.IO events for follow/stream-start/like, connect Bell icon
+6. Search backend — Medium: Add /api/v1/search?q= route, search across Streams + Users. Add fuse.js or MongoDB $text index
+7. Recommendations — Medium: Add /api/v1/streams/trending endpoint, sort by viewer count/recent activity
+8. Social controller stubs — Easy: implement like/comment/share with DB models
+P3 — FROM SCRATCH:
+9. Super Chat / Donations — Hard: payment gateway integration, stream overlay
+10. Admin/moderation panel — Hard: user management, stream flagging, chat moderation
+P4 — NICE-TO-HAVE:
+11. Typing indicators in chat
+12. Chat message persistence (currently Socket.IO only, not saved to DB)
+13. Stream scheduling / calendar
+14. Analytics dashboard (frontend exists, backend partially done)
+QUICK WINS (< 30 min each)
+Task	File	Fix
+Install hls.js + video.js	Frontend/	npm install hls.js video.js
+Fix API path in stream.jsx	profile/stream.jsx:24	/api/streams/ → /api/v1/streams/
+Wire watch.jsx into stream layout	ui_layout_stream.jsx:4	Import watch.jsx instead of StreamPlayer
+Fix Social route paths	route/Social.controller.js:12-17	Add leading / to routes (e.g. /user/:id/like)
+ANSWERS TO SPECIFIC QUESTIONS
+- StreamPlayer.jsx: No <video> tag, no hls.js import. It's a stream listing component.
+- watch.jsx: Has <video> tag, uses video.js (NOT installed), references HLS URL.
+- VOD route: GET /api/v1/streams/creator/:creatorId/recordings EXISTS but no frontend UI.
+- Notifications model: NOT in MongoDB schemas. User model has preferences only.
+- Search route: NOT in backend. No /api/v1/search exists.
+- Recommendation logic: NOWHERE. Explore page uses hardcoded mock data.
+- Auth flow: Clerk OAuth (primary) + custom requireAuth middleware decoding Clerk JWTs. No sessions.
+- Socket.io: YES — fully set up on both backend (sockets.js) and frontend (golive.jsx, stream.jsx).

@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAuth } from "@clerk/express";
+import { requireAuth } from "../middleware/require-Auth.js";
 import {
   getProfile,
   updateProfile,

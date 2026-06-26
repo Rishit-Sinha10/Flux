@@ -7,7 +7,7 @@ import {
   getPaymentStats,
   deletePayment,
 } from "../controller/payment.controller.js";
-import { requireAuth } from "@clerk/express";
+import { requireAuth } from "../middleware/require-Auth.js";
 const router = express.Router();
 /**
  * Payment API Routes

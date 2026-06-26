@@ -6,7 +6,7 @@ import {
   updateUserSettings,
   getAnalytics,
 } from "../controller/profile.controller.js";
-import { requireAuth } from "@clerk/express";
+import { requireAuth } from "../middleware/require-Auth.js";
 import User from "../models/User.models.js";
 const route = express.Router();
 

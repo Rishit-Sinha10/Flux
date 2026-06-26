@@ -386,7 +386,6 @@ export const generateAnalyticsReport = async (req, res) => {
       });
     }
     timings.mongoCheck = Date.now() - startTime;
-
     console.log(
       "📡 [analytics] Analytics report route hit for userId:",
       req.auth?.userId || req.params.userId,

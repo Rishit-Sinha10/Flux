@@ -161,25 +161,25 @@ export default function AnalyticsDashboard() {
                 icon="🎬"
                 label="Total Streams"
                 value={summary.totalStreams || 0}
-                trend="+12%"
+                trend="+0%"
               />
               <KPICard
                 icon="👥"
                 label="Total Viewers"
                 value={(summary.totalViewers || 0).toLocaleString()}
-                trend="+8%"
+                trend="+0%"
               />
               <KPICard
                 icon="⏱"
                 label="Watch Time (min)"
                 value={(summary.totalWatchTime || 0).toLocaleString()}
-                trend="+5%"
+                trend="+0%"
               />
               <KPICard
                 icon="📊"
                 label="Avg Engagement"
                 value={`${(summary.averageEngagementRate || 0).toFixed(1)}%`}
-                trend="+3%"
+                trend="+0%"
               />
             </div>
 

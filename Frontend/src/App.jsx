@@ -18,6 +18,7 @@ import StreamPage from "./components/profile/stream";
 import Profile from "./components/pages/profile";
 import Settings from "./components/pages/settings";
 import AnalyticsDashboard from "./components/pages/analyticsDashboard";
+import VODPage from "./components/pages/vod";
 import PaymentForm from "./components/payment/PaymentForm";
 import PaymentHistory from "./components/payment/PaymentHistory";
 import PaymentStats from "./components/payment/PaymentStats";
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
+          <Route path="/vod" element={<ProtectedRoute><VODPage /></ProtectedRoute>} />
           <Route path="/Profile" element={<ProtectedRoute><ProfileLayout /></ProtectedRoute>} />
           <Route path="/Explore" element={<ProtectedRoute><ExploreLayout /></ProtectedRoute>} />
           <Route path="/Watch" element={<ProtectedRoute><StreamLayout /></ProtectedRoute>} />

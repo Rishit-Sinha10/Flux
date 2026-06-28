@@ -98,7 +98,7 @@ export default function StreamPage() {
               {/* ✅ FIXED: Real HLS video player */}
               <div className="lg:col-span-2">
                 <div className="bg-black rounded-lg shadow-lg overflow-hidden relative h-96">
-                  <StreamPlayer streamId={stream.streamKey || id} />
+                  <StreamPlayer streamId={stream.streamKey || id} hlsUrl={stream.hlsUrl} />
                   <button
                     onClick={() => setShowAIPanel(!showAIPanel)}
                     className="absolute top-4 right-4 px-4 py-2 bg-purple-600 hover:bg-purple-700

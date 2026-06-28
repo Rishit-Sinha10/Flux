@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { io } from "socket.io-client";
 import Navbar from "../common/navbar";
 import Sidebar from "../common/sidebar";
 import StreamPlayer from "../pages/StreamPlayer";
 import ChatbotWidget from "../chatbot/chatbot_widget";
 import { streamAPI } from "../../services/apiClient";
+
+const socket = io("http://localhost:5000");
 
 const CATEGORY_COLORS = {
     Gaming: { bg: "#1e1b4b", text: "#a5b4fc" },
@@ -29,10 +32,13 @@ export default function StreamLayout() {
   const [liveStreams, setLiveStreams] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const pollingRef = useRef(null);
+
   useEffect(() => {
     if (streamId) return;
     let cancelled = false;
-    (async () => {
+
+    const doFetch = async () => {
       try {
         const res = await streamAPI.getLiveStreams();
         if (!cancelled) setLiveStreams(res.data);
@@ -41,8 +47,18 @@ export default function StreamLayout() {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
-    return () => { cancelled = true; };
+    };
+    doFetch();
+
+    socket.on("new-live-stream", () => { if (!cancelled) doFetch(); });
+
+    pollingRef.current = setInterval(() => { if (!cancelled) doFetch(); }, 10000);
+
+    return () => {
+      cancelled = true;
+      socket.off("new-live-stream");
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
   }, [streamId]);
 
   return (

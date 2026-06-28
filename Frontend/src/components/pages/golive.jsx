@@ -85,9 +85,15 @@ export default function GoLiveDashboard() {
     socket.on("viewer-count", (count) => {
       setViewers(count);
     });
+    socket.on("stream-status", (status) => {
+      if (status.isLive && status.status === "live") {
+        setPreviewError(null);
+      }
+    });
     return () => {
       socket.off("receive-message");
       socket.off("viewer-count");
+      socket.off("stream-status");
     };
   }, [streamId]);
   const cleanupHls = useCallback(() => {

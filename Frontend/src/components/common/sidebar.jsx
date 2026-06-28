@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SignOutButton, UserAvatar, UserButton } from "@clerk/react";
-import { LayoutDashboard, BarChart2, Settings,Video, Expand,MenuIcon,HelpCircle, EyeIcon, HandCoins } from "lucide-react";
+import { LayoutDashboard, BarChart2, Settings,Video, Expand,MenuIcon,HelpCircle, EyeIcon, HandCoins, Film } from "lucide-react";
 import { Toast } from "./toast";
 const Sidebar = ({ isCollapsed }) => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const Sidebar = ({ isCollapsed }) => {
     { icon: <Settings size={18} />, label: "Settings", path: "/settings" },
     { icon:<Expand size={18}/>,label:"Explore",path:"/Explore"},
     { icon:<EyeIcon size={18}/>,label:"Watch",path:"/Watch"},
+    { icon:<Film size={18}/>,label:"Recordings",path:"/vod"},
     { icon:<HandCoins size={18}/>,label:"Payment",path:"/Payment"},
   ];
   return (

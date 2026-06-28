@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import Hls from "hls.js";
 const RETRY_INTERVAL = 5000;
-export default function StreamPlayer({ streamId }) {
+export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const retryTimerRef = useRef(null);
@@ -19,7 +19,7 @@ export default function StreamPlayer({ streamId }) {
   }, []);
   const startPlayer = useCallback(() => {
     if (!streamId || !videoRef.current) return;
-    const hlsUrl = `http://localhost:8080/live/${streamId}/index.m3u8`;
+    const hlsUrl = overrideHlsUrl || `http://localhost:8080/live/${streamId}/index.m3u8`;
     const video = videoRef.current;
     if (hlsRef.current) {
       hlsRef.current.destroy();

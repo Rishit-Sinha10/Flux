@@ -292,4 +292,8 @@ export const streamAPI = {
   getTrendingStreams: (limit = 10, category) =>
     apiClient.get("/streams/trending", { params: { limit, category } }),
 };
+// VOD API
+export const vodAPI = {
+  getAll: () => apiClient.get("/streams/vod/all"),
+};
 export default apiClient;

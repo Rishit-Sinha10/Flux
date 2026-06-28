@@ -137,7 +137,7 @@ export default function AnalyticsDashboard() {
 
         {/* Tab Navigation */}
         <div className="flex gap-4 mb-8 border-b border-slate-700 overflow-x-auto">
-          {["overview", "engagement", "devices", "regions", "streams"].map((tab) => (
+          {["overview", "engagement","streams"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -276,126 +276,6 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
         )}
-
-        {/* Devices Tab */}
-        {activeTab === "devices" && (
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-6">Viewer Distribution by Device</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex justify-center">
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={[
-                        { name: "Mobile", value: deviceBreakdown.mobile || 0 },
-                        { name: "Desktop", value: deviceBreakdown.desktop || 0 },
-                        { name: "Tablet", value: deviceBreakdown.tablet || 0 },
-                      ]}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) =>
-                        value > 0 ? `${name}: ${value}` : null
-                      }
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {COLORS.map((color, index) => (
-                        <Cell key={`cell-${index}`} fill={color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="space-y-4">
-                <DeviceItem icon="📱" name="Mobile" value={deviceBreakdown.mobile || 0} />
-                <DeviceItem icon="💻" name="Desktop" value={deviceBreakdown.desktop || 0} />
-                <DeviceItem icon="📱" name="Tablet" value={deviceBreakdown.tablet || 0} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Regions Tab */}
-        {activeTab === "regions" && (
-          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-6">Top Regions</h3>
-            {topRegions.length > 0 ? (
-              <div className="space-y-3">
-                {topRegions.map((region, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-slate-300">
-                      {index + 1}. {region.country}
-                    </span>
-                    <div className="flex items-center gap-3">
-                      <div className="w-32 bg-slate-700 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full"
-                          style={{
-                            width: `${
-                              (region.viewers /
-                                Math.max(
-                                  ...topRegions.map((r) => r.viewers)
-                                )) *
-                              100
-                            }%`,
-                          }}
-                        ></div>
-                      </div>
-                      <span className="text-white font-semibold w-16 text-right">
-                        {region.viewers}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-slate-400">No regional data available</p>
-            )}
-          </div>
-        )}
-
-        {/* Streams Tab */}
-        {activeTab === "streams" && (
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white">Top Performing Streams</h3>
-            {topStreams.length > 0 ? (
-              topStreams.map((stream, index) => (
-                <div
-                  key={index}
-                  className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:border-slate-600 transition"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="bg-blue-600/30 rounded-full w-12 h-12 flex items-center justify-center">
-                        <span className="text-white font-bold">#{index + 1}</span>
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold">Stream #{index + 1}</p>
-                        <p className="text-slate-400 text-sm">
-                          {new Date(stream.date).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-white font-bold">
-                        {stream.viewers.toLocaleString()} viewers
-                      </p>
-                      <p className="text-blue-400 text-sm">
-                        {stream.engagementRate.toFixed(1)}% engagement
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400">No stream data available</p>
-            )}
-          </div>
-        )}
-
         {/* Refresh Button */}
         <div className="mt-8 text-center">
           <button
@@ -442,7 +322,6 @@ function EngagementBar({ label, value }) {
     </div>
   );
 }
-
 function EngagementCard({ icon, label, value }) {
   return (
     <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
@@ -452,20 +331,6 @@ function EngagementCard({ icon, label, value }) {
           <p className="text-slate-400 text-sm">{label}</p>
           <p className="text-2xl font-bold text-white">{value.toLocaleString()}</p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function DeviceItem({ icon, name, value }) {
-  return (
-    <div className="bg-slate-700/30 border border-slate-700 rounded-lg p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{icon}</span>
-          <span className="text-white font-semibold">{name}</span>
-        </div>
-        <span className="text-blue-400 font-bold">{value.toLocaleString()}</span>
       </div>
     </div>
   );

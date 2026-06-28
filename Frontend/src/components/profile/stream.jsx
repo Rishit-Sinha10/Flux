@@ -1,32 +1,29 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/react";
 import { io } from "socket.io-client";
 import StreamViewerAIPanel from "../chatbot/StreamViewerAIPanel";
 import Navbar from "../common/navbar";
 import Sidebar from "../common/sidebar";
 import StreamPlayer from "../pages/StreamPlayer";
 import { Sparkles, Send } from "lucide-react";
+import apiClient from "../../services/apiClient";
 const socket = io("http://localhost:5000");
 export default function StreamPage() {
   const { id } = useParams();
+  const { user } = useUser();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [stream, setStream] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [viewers, setViewers] = useState(0);
   const [showAIPanel, setShowAIPanel] = useState(false);
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-  // ✅ FIXED: correct API path /api/v1/streams/
+  const currentUser = user;
   useEffect(() => {
     const fetchStream = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/v1/streams/${id}`);
-        if (!res.ok) {
-          console.error("Failed to fetch stream:", res.status);
-          return;
-        }
-        const data = await res.json();
-        setStream(data);
+        const response = await apiClient.get(`/streams/${id}`);
+        setStream(response.data);
       } catch (err) {
         console.error("Error fetching stream:", err);
       }
@@ -53,7 +50,7 @@ export default function StreamPage() {
     socket.emit("send-message", {
       streamId: id,
       message: input,
-      user: currentUser?.username || "Guest",
+      user: currentUser?.username || currentUser?.fullName || "Guest",
     });
     setInput("");
   };

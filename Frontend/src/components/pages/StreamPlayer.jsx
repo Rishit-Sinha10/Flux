@@ -1,21 +1,30 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import Hls from "hls.js";
+const RETRY_INTERVAL = 5000;
 export default function StreamPlayer({ streamId }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
+  const retryTimerRef = useRef(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
+  const cleanup = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearInterval(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+  }, []);
+  const startPlayer = useCallback(() => {
     if (!streamId || !videoRef.current) return;
-    const hlsUrl = `http://localhost:8080/hls/${streamId}.m3u8`;
+    const hlsUrl = `http://localhost:8080/live/${streamId}/index.m3u8`;
     const video = videoRef.current;
-    const cleanup = () => {
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
-      }
-    };
-    cleanup();
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
     setError(null);
     setLoading(true);
     if (Hls.isSupported()) {
@@ -24,16 +33,14 @@ export default function StreamPlayer({ streamId }) {
         lowLatencyMode: true,
         backBufferLength: 90,
       });
-
       hlsRef.current = hls;
       hls.loadSource(hlsUrl);
       hls.attachMedia(video);
-
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setLoading(false);
+        setError(null);
         video.play().catch(() => {});
       });
-
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
           setLoading(false);
@@ -41,10 +48,10 @@ export default function StreamPlayer({ streamId }) {
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Safari native HLS
       video.src = hlsUrl;
       video.addEventListener("loadedmetadata", () => {
         setLoading(false);
+        setError(null);
         video.play().catch(() => {});
       });
       video.addEventListener("error", () => {
@@ -55,8 +62,31 @@ export default function StreamPlayer({ streamId }) {
       setError("Your browser does not support HLS playback.");
       setLoading(false);
     }
-    return cleanup;
   }, [streamId]);
+  useEffect(() => {
+    if (!streamId) return;
+    startPlayer();
+    retryTimerRef.current = setInterval(() => {
+      const hls = hlsRef.current;
+      if (!hls || !hls.url) {
+        startPlayer();
+        return;
+      }
+      try {
+        if (hls.nextLoadLevel !== undefined && hls.state !== undefined) {
+          const states = ["STOPPED", "IDLE", "MANIFEST_LOADING", "MANIFEST_LOADED", "MANIFEST_PARSED", "LEVEL_LOADING", "LEVEL_LOADED", "AUDIO_TRACK_LOADING", "AUDIO_TRACK_LOADED", "BUFFERING", "LOADING", "PLAYING", "PAUSED", "ERROR"];
+          const stateName = states[hls.state];
+          if (stateName === "ERROR" || hls.state === 13) {
+            startPlayer();
+          }
+        } else if (hls.bufferInfo) {
+        }
+      } catch {
+        startPlayer();
+      }
+    }, RETRY_INTERVAL);
+    return cleanup;
+  }, [streamId, startPlayer, cleanup]);
   return (
     <div className="relative w-full h-full bg-black rounded-lg overflow-hidden">
       {loading && (
@@ -69,6 +99,7 @@ export default function StreamPlayer({ streamId }) {
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
           <p className="text-4xl mb-3">📡</p>
           <p className="text-sm text-gray-300 text-center px-4">{error}</p>
+          <p className="text-xs text-gray-500 mt-2">Retrying every 5 seconds...</p>
         </div>
       )}
       <video

@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useUser } from "@clerk/react";
 import {
   Send,
   Paperclip,
@@ -9,9 +10,13 @@ import {
   Eye,
 } from "lucide-react";
 import { io } from "socket.io-client";
+import Hls from "hls.js";
 import StreamerAISuggestions from "../chatbot/StreamerAISuggestions";
+import apiClient from "../../services/apiClient";
 const socket = io("http://localhost:5000");
+const RETRY_INTERVAL = 3000;
 export default function GoLiveDashboard() {
+  const { user } = useUser();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Gaming");
   const [desc, setDesc] = useState("");
@@ -23,58 +28,48 @@ export default function GoLiveDashboard() {
   const [showAISuggestions, setShowAISuggestions] = useState(false);
   const [viewers, setViewers] = useState(0);
   const [streamId, setStreamId] = useState(null);
+  const [previewError, setPreviewError] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const chatEndRef = useRef(null);
-  // ✅ FIXED: Removed undefined 'response' variable — streamKey1 and rtmpUrl were never used
-  const currentUser = JSON.parse(localStorage.getItem("user")) || {
-    username: "Streamer",
-  };
+  const videoRef = useRef(null);
+  const hlsRef = useRef(null);
+  const retryTimerRef = useRef(null);
+  const currentUsername = user?.username || user?.fullName || "Streamer";
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-  // 🔥 Handle going live - Create or join stream
   useEffect(() => {
     if (isLive && !streamId) {
-      // Create a new stream when going live
+      if (!title.trim()) {
+        setValidationErrors({ title: "Stream title is required" });
+        setIsLive(false);
+        return;
+      }
+      setValidationErrors({});
       const createStream = async () => {
         try {
-          const response = await fetch(
-            "http://localhost:5000/api/v1/streams/create",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-              body: JSON.stringify({
-                title: title || "My Stream",
-                description: desc,
-                category: category,
-              }),
-            },
-          );
-          const data = await response.json();
-          setStreamId(data._id);
-          setMessages([]); // Clear messages for new stream
-          // Join the stream via Socket.IO
-          socket.emit("join-stream", data._id);
+          const response = await apiClient.post("/streams/create", {
+            title: title || "My Stream",
+            description: desc,
+            category: category,
+          });
+          setStreamId(response.data._id);
+          setStreamKey(response.data.streamKey);
+          setMessages([]);
+          socket.emit("join-stream", response.data._id);
         } catch (error) {
           console.error("Error creating stream:", error);
+          setIsLive(false);
         }
       };
       createStream();
     } else if (!isLive && streamId) {
-      // End stream when going offline
       const endStream = async () => {
         try {
-          await fetch(`http://localhost:5000/api/v1/streams/${streamId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          });
+          await apiClient.put(`/streams/end/${streamId}`);
           socket.emit("leave-stream", streamId);
           setStreamId(null);
+          setStreamKey("");
         } catch (error) {
           console.error("Error ending stream:", error);
         }
@@ -82,32 +77,86 @@ export default function GoLiveDashboard() {
       endStream();
     }
   }, [isLive, streamId, title, desc, category]);
-
-  // ⚡ Socket.IO listeners for real-time chat and viewer count
   useEffect(() => {
     if (!streamId) return;
-
     socket.on("receive-message", (data) => {
       setMessages((prev) => [...prev, data]);
     });
     socket.on("viewer-count", (count) => {
       setViewers(count);
     });
-
     return () => {
       socket.off("receive-message");
       socket.off("viewer-count");
     };
   }, [streamId]);
-
-  // 💬 Send message via Socket.IO
+  const cleanupHls = useCallback(() => {
+    if (retryTimerRef.current) {
+      clearInterval(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+  }, []);
+  const startHlsPlayer = useCallback(() => {
+    if (!videoRef.current || !streamKey) return;
+    const video = videoRef.current;
+    const hlsUrl = `http://localhost:8080/live/${streamKey}/index.m3u8`;
+    if (hlsRef.current) {
+      hlsRef.current.destroy();
+      hlsRef.current = null;
+    }
+    setPreviewError(null);
+    if (Hls.isSupported()) {
+      const hls = new Hls({ enableWorker: true, lowLatencyMode: true });
+      hlsRef.current = hls;
+      hls.loadSource(hlsUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        setPreviewError(null);
+        video.play().catch(() => {});
+      });
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) {
+          setPreviewError("Waiting for OBS... Connect via RTMP with the key below");
+        }
+      });
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = hlsUrl;
+      video.addEventListener("loadedmetadata", () => video.play().catch(() => {}));
+      video.addEventListener("error", () => {
+        setPreviewError("Waiting for OBS... Connect via RTMP with the key below");
+      });
+    } else {
+      setPreviewError("HLS not supported in this browser");
+    }
+  }, [streamKey]);
+  useEffect(() => {
+    if (!isLive || !streamKey || !videoRef.current) {
+      cleanupHls();
+      return;
+    }
+    startHlsPlayer();
+    retryTimerRef.current = setInterval(() => {
+      if (hlsRef.current) {
+        const hls = hlsRef.current;
+        if (hls.state && hls.state !== "MEDIA_ATTACHED" && hls.state !== "MANIFEST_PARSED" && hls.state !== "PLAYING") {
+          startHlsPlayer();
+        }
+      }
+    }, RETRY_INTERVAL);
+    return () => {
+      cleanupHls();
+    };
+  }, [isLive, streamKey, cleanupHls, startHlsPlayer]);
   const handleSend = () => {
     if (!message.trim() || !streamId) return;
-
     socket.emit("send-message", {
       streamId: streamId,
       message: message,
-      user: currentUser?.username || "Streamer",
+      user: currentUsername,
       sender: "me",
     });
     setMessage("");
@@ -121,15 +170,15 @@ export default function GoLiveDashboard() {
       setShowAISuggestions(true);
     }
   };
+  const canGoLive = title.trim().length > 0;
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex items-end justify-between bg-white rounded-lg p-4 shadow-sm border border-gray-200">
         <div>
           <div className="flex items-center gap-3 mb-2">
             {isLive && (
               <>
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                 <span className="text-xs font-bold text-red-500 uppercase tracking-wider">
                   Live
                 </span>
@@ -138,10 +187,18 @@ export default function GoLiveDashboard() {
             <h1 className="text-2xl font-bold text-gray-900">Go Live</h1>
           </div>
           <p className="text-sm text-gray-500">
-            Manage your stream settings and interact with viewers
+            {isLive
+              ? "You are live. Stream with OBS using the stream key below."
+              : "Configure your stream and go live when ready."}
           </p>
         </div>
         <div className="flex gap-4">
+          {isLive && streamKey && !previewError && (
+            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              Stream Detected
+            </span>
+          )}
           <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-full text-sm">
             <Eye size={14} className="text-red-500" />
             <span className="text-gray-700 font-medium">{viewers} viewers</span>
@@ -154,12 +211,8 @@ export default function GoLiveDashboard() {
           </div>
         </div>
       </div>
-
-      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Preview & Settings */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Live Preview Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
               <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -167,29 +220,45 @@ export default function GoLiveDashboard() {
               </span>
               <Tv2 size={16} className="text-gray-400" />
             </div>
-            <div className="bg-gradient-to-br from-gray-100 to-gray-50 h-80 flex items-center justify-center relative overflow-hidden">
-              {/* Grid Pattern Background */}
-              <div
-                className="absolute inset-0 opacity-40"
-                style={{
-                  backgroundImage: `radial-gradient(circle, #ddd 1px, transparent 1px)`,
-                  backgroundSize: "24px 24px",
-                }}
-              ></div>
-
-              {/* No Source Message */}
-              <div className="relative z-10 text-center">
-                <div className="w-14 h-14 bg-white border border-gray-300 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                  <Tv2 size={24} className="text-gray-400" />
+            <div className="relative bg-black h-80 flex items-center justify-center overflow-hidden">
+              {isLive && streamKey ? (
+                <>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    muted
+                    playsInline
+                    className="w-full h-full object-contain"
+                  />
+                  {previewError ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 text-white">
+                      <div className="w-14 h-14 border-2 border-gray-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <Tv2 size={24} className="text-gray-400" />
+                      </div>
+                      <p className="text-sm text-gray-400">{previewError}</p>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Retrying every 3 seconds...
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="absolute top-3 left-3 flex items-center gap-2 bg-red-600/80 text-white px-2 py-1 rounded text-xs font-semibold">
+                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                      PREVIEW
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center">
+                  <div className="w-14 h-14 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Tv2 size={24} className="text-gray-500" />
+                  </div>
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider">
+                    No source connected
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">
-                  No source connected
-                </p>
-              </div>
+              )}
             </div>
           </div>
-
-          {/* Stream Settings Card */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-2 mb-6">
               <Radio size={14} className="text-red-500" />
@@ -197,23 +266,30 @@ export default function GoLiveDashboard() {
                 Stream Settings
               </span>
             </div>
-
             <div className="space-y-4">
-              {/* Stream Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Stream Title
+                  Stream Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="Enter stream title"
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition"
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                    if (e.target.value.trim()) {
+                      setValidationErrors((prev) => ({ ...prev, title: undefined }));
+                    }
+                  }}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition ${
+                    validationErrors.title ? "border-red-400" : "border-gray-300"
+                  }`}
+                  disabled={isLive}
                 />
+                {validationErrors.title && (
+                  <p className="text-red-500 text-xs mt-1">{validationErrors.title}</p>
+                )}
               </div>
-
-              {/* Category & Stream Key */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -224,6 +300,7 @@ export default function GoLiveDashboard() {
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition appearance-none"
+                      disabled={isLive}
                     >
                       <option>Gaming</option>
                       <option>Education</option>
@@ -231,28 +308,45 @@ export default function GoLiveDashboard() {
                       <option>Tech</option>
                       <option>Just Chatting</option>
                     </select>
-                    <ChevronDown
-                      size={16}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-                    />
+                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                   </div>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Stream Key
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Your stream key"
-                    value={streamKey}
-                    onChange={(e) => setStreamKey(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition font-mono text-sm"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={streamKey}
+                      readOnly
+                      placeholder={isLive ? "Waiting for stream..." : "Will generate when live"}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-mono"
+                    />
+                    {streamKey && (
+                      <button
+                        onClick={() => navigator.clipboard.writeText(streamKey)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-red-500 hover:text-red-600 font-semibold"
+                      >
+                        Copy
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-
-              {/* Description */}
+              {isLive && streamKey && (
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">OBS Settings</p>
+                  <p className="text-sm text-gray-700">
+                    <span className="font-medium">Server:</span>{" "}
+                    <code className="bg-gray-200 px-1 rounded text-xs">rtmp://localhost:1935/live</code>
+                  </p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    <span className="font-medium">Stream Key:</span>{" "}
+                    <code className="bg-gray-200 px-1 rounded text-xs">{streamKey}</code>
+                  </p>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Description
@@ -263,27 +357,26 @@ export default function GoLiveDashboard() {
                   onChange={(e) => setDesc(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition resize-none"
+                  disabled={isLive}
                 />
               </div>
-
-              {/* Go Live Button */}
               <div className="flex justify-end pt-2">
                 <button
                   onClick={() => setIsLive((v) => !v)}
-                  className={`px-8 py-2 rounded-lg font-bold transition transform hover:scale-105 ${
+                  disabled={!canGoLive && !isLive}
+                  className={`px-8 py-2 rounded-lg font-bold transition transform hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none ${
                     isLive
                       ? "bg-gray-900 text-white hover:bg-gray-800"
                       : "bg-red-500 text-white hover:bg-red-600 shadow-md"
                   }`}
+                  title={!canGoLive && !isLive ? "Enter a stream title first" : ""}
                 >
-                  {isLive ? "⏹ End Stream" : "● Go Live"}
+                  {isLive ? "End Stream" : "Go Live"}
                 </button>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Right Column - Live Chat */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col h-96 lg:h-auto">
           <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -293,8 +386,6 @@ export default function GoLiveDashboard() {
               {messages.length} msgs
             </span>
           </div>
-
-          {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 ? (
               <p className="text-center text-gray-400 text-sm mt-4">
@@ -302,51 +393,28 @@ export default function GoLiveDashboard() {
               </p>
             ) : (
               messages.map((msg, i) => {
-                const colors = [
-                  "#6366f1",
-                  "#f59e0b",
-                  "#10b981",
-                  "#8b5cf6",
-                  "#ec4899",
-                ];
-                const botColor =
-                  colors[(msg.user?.charCodeAt?.(0) ?? i) % colors.length];
-
+                const colors = ["#6366f1", "#f59e0b", "#10b981", "#8b5cf6", "#ec4899"];
+                const botColor = colors[(msg.user?.charCodeAt?.(0) ?? i) % colors.length];
                 return (
-                  <div
-                    key={i}
-                    className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={msg.sender === "me" ? "max-w-xs" : "max-w-xs"}
-                    >
+                  <div key={i} className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}>
+                    <div className="max-w-xs">
                       {msg.sender !== "me" && (
                         <div className="flex items-center gap-2 mb-1">
-                          <div
-                            className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                            style={{ background: botColor }}
-                          >
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: botColor }}>
                             {msg.user?.[0]?.toUpperCase() || "?"}
                           </div>
-                          <span className="text-xs text-gray-500 font-medium">
-                            {msg.user || "Guest"}
-                          </span>
+                          <span className="text-xs text-gray-500 font-medium">{msg.user || "Guest"}</span>
                         </div>
                       )}
-                      <div
-                        onClick={() => handleSelectMessage(msg)}
-                        className={`px-3 py-2 rounded-lg cursor-pointer transition ${
-                          msg.sender === "me"
-                            ? "bg-red-500 text-white rounded-tr-none"
-                            : "bg-gray-100 text-gray-900 rounded-tl-none hover:bg-gray-200"
-                        } ${msg.sender !== "me" ? "group" : ""}`}
-                      >
-                        <p className="text-sm leading-relaxed">
-                          {msg.message || msg.text}
-                        </p>
+                      <div onClick={() => handleSelectMessage(msg)} className={`px-3 py-2 rounded-lg cursor-pointer transition ${
+                        msg.sender === "me"
+                          ? "bg-red-500 text-white rounded-tr-none"
+                          : "bg-gray-100 text-gray-900 rounded-tl-none hover:bg-gray-200"
+                      } ${msg.sender !== "me" ? "group" : ""}`}>
+                        <p className="text-sm leading-relaxed">{msg.message || msg.text}</p>
                         {msg.sender !== "me" && (
                           <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition">
-                            💡 Get AI reply
+                            Get AI reply
                           </p>
                         )}
                       </div>
@@ -357,8 +425,6 @@ export default function GoLiveDashboard() {
             )}
             <div ref={chatEndRef} />
           </div>
-
-          {/* Chat Input */}
           <div className="border-t border-gray-200 p-3 flex items-center gap-2 bg-gray-50">
             {!isLive ? (
               <div className="w-full text-center py-2 text-sm text-gray-500">
@@ -366,10 +432,7 @@ export default function GoLiveDashboard() {
               </div>
             ) : (
               <>
-                <label
-                  htmlFor="fileUpload"
-                  className="cursor-pointer text-gray-400 hover:text-gray-600 transition flex-shrink-0"
-                >
+                <label htmlFor="fileUpload" className="cursor-pointer text-gray-400 hover:text-gray-600 transition flex-shrink-0">
                   <Paperclip size={18} />
                 </label>
                 <input type="file" id="fileUpload" className="hidden" />
@@ -382,11 +445,7 @@ export default function GoLiveDashboard() {
                   className="flex-1 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition text-sm"
                   disabled={!isLive}
                 />
-                <button
-                  onClick={handleSend}
-                  className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex-shrink-0 disabled:opacity-50"
-                  disabled={!isLive}
-                >
+                <button onClick={handleSend} className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex-shrink-0 disabled:opacity-50" disabled={!isLive}>
                   <Send size={16} />
                 </button>
               </>
@@ -394,21 +453,13 @@ export default function GoLiveDashboard() {
           </div>
         </div>
       </div>
-
-      {/* AI Suggestions Panel */}
       {showAISuggestions && (
         <StreamerAISuggestions
           selectedMessage={selectedMessage}
           streamTitle={title || "My Stream"}
           category={category}
-          onSuggestionsClose={() => {
-            setShowAISuggestions(false);
-            setSelectedMessage(null);
-          }}
-          onSelectSuggestion={(suggestion) => {
-            setMessage(suggestion);
-            setShowAISuggestions(false);
-          }}
+          onSuggestionsClose={() => { setShowAISuggestions(false); setSelectedMessage(null); }}
+          onSelectSuggestion={(suggestion) => { setMessage(suggestion); setShowAISuggestions(false); }}
         />
       )}
     </div>

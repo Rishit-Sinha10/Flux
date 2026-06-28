@@ -283,4 +283,13 @@ export const Follow = {
   getFollowing: (userId) => 
     apiClient.get(`/follower/${userId}/following`),
 };
+// Stream API
+export const streamAPI = {
+  getLiveStreams: () => apiClient.get("/streams/live"),
+  getStreamById: (id) => apiClient.get(`/streams/${id}`),
+  searchStreams: (q, type = "all") =>
+    apiClient.get("/streams/search", { params: { q, type } }),
+  getTrendingStreams: (limit = 10, category) =>
+    apiClient.get("/streams/trending", { params: { limit, category } }),
+};
 export default apiClient;

@@ -19,6 +19,7 @@ import Profile from "./components/pages/profile";
 import Settings from "./components/pages/settings";
 import AnalyticsDashboard from "./components/pages/analyticsDashboard";
 import VODPage from "./components/pages/vod";
+import DashboardPage from "./components/pages/DashboardPage";
 import PaymentForm from "./components/payment/PaymentForm";
 import PaymentHistory from "./components/payment/PaymentHistory";
 import PaymentStats from "./components/payment/PaymentStats";
@@ -35,7 +36,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/email-sent" element={<EmailSent />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
           <Route path="/Live" element={<ProtectedRoute><GoLiveLayout /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

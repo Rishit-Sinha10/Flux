@@ -4,7 +4,6 @@ import { vodAPI } from "../../services/apiClient";
 import Navbar from "../common/navbar";
 import Sidebar from "../common/sidebar";
 import { Film, Clock, Eye } from "lucide-react";
-
 export default function VODPage() {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);

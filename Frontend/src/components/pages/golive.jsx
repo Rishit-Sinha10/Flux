@@ -15,19 +15,39 @@ import StreamerAISuggestions from "../chatbot/StreamerAISuggestions";
 import apiClient from "../../services/apiClient";
 const socket = io("http://localhost:5000");
 const RETRY_INTERVAL = 3000;
+const LS_KEY = "flux_live_state";
+
+function loadLiveState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function saveLiveState(title, desc, category, isLive, streamId, streamKey) {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({ title, desc, category, isLive, streamId, streamKey }));
+  } catch { /* quota exceeded — ignore */ }
+}
+
+function clearLiveState() {
+  try { localStorage.removeItem(LS_KEY); } catch { /* ok */ }
+}
+
 export default function GoLiveDashboard() {
   const { user } = useUser();
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("Gaming");
-  const [desc, setDesc] = useState("");
-  const [streamKey, setStreamKey] = useState("");
+  const saved = loadLiveState();
+  const [title, setTitle] = useState(saved?.title || "");
+  const [category, setCategory] = useState(saved?.category || "Gaming");
+  const [desc, setDesc] = useState(saved?.desc || "");
+  const [streamKey, setStreamKey] = useState(saved?.streamKey || "");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [isLive, setIsLive] = useState(false);
+  const [isLive, setIsLive] = useState(saved?.isLive || false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [showAISuggestions, setShowAISuggestions] = useState(false);
   const [viewers, setViewers] = useState(0);
-  const [streamId, setStreamId] = useState(null);
+  const [streamId, setStreamId] = useState(saved?.streamId || null);
   const [previewError, setPreviewError] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const chatEndRef = useRef(null);
@@ -68,6 +88,7 @@ export default function GoLiveDashboard() {
         try {
           await apiClient.put(`/streams/end/${streamId}`);
           socket.emit("leave-stream", streamId);
+          clearLiveState();
           setStreamId(null);
           setStreamKey("");
         } catch (error) {
@@ -76,6 +97,7 @@ export default function GoLiveDashboard() {
       };
       endStream();
     }
+    saveLiveState(title, desc, category, isLive, streamId, streamKey);
   }, [isLive, streamId, title, desc, category]);
   useEffect(() => {
     if (!streamId) return;

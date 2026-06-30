@@ -9,7 +9,7 @@ const Sidebar = ({ isCollapsed }) => {
   const navItems = [
     { icon: <LayoutDashboard size={18} />, label: "Dashboard", path: "/dashboard" },
     { icon: <BarChart2 size={18} />, label: "Analytics", path: "/analytics" },
-    { icon: <MenuIcon size={18} />, label: "Profile", path: "/Profile" },
+    { icon: <MenuIcon size={18} />, label: "Profile", path: "/profile" },
     { icon: <Settings size={18} />, label: "Settings", path: "/settings" },
     { icon:<Expand size={18}/>,label:"Explore",path:"/Explore"},
     { icon:<EyeIcon size={18}/>,label:"Watch",path:"/Watch"},

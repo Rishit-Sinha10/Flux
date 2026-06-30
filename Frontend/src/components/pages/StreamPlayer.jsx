@@ -1,12 +1,15 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import Hls from "hls.js";
 const RETRY_INTERVAL = 5000;
+const MAX_RETRIES = 20;
 export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
   const videoRef = useRef(null);
   const hlsRef = useRef(null);
   const retryTimerRef = useRef(null);
+  const retryCountRef = useRef(0);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   const cleanup = useCallback(() => {
     if (retryTimerRef.current) {
       clearInterval(retryTimerRef.current);
@@ -39,12 +42,21 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         setLoading(false);
         setError(null);
+        retryCountRef.current = 0;
+        setRetryCount(0);
         video.play().catch(() => {});
       });
       hls.on(Hls.Events.ERROR, (_, data) => {
         if (data.fatal) {
-          setLoading(false);
-          setError("Stream unavailable. Streamer may be offline.");
+          retryCountRef.current += 1;
+          setRetryCount(retryCountRef.current);
+          if (retryCountRef.current >= MAX_RETRIES) {
+            setLoading(false);
+            setError("Stream unavailable. Streamer may be offline.");
+          } else {
+            setLoading(true);
+            setError(null);
+          }
         }
       });
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
@@ -52,11 +64,20 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
       video.addEventListener("loadedmetadata", () => {
         setLoading(false);
         setError(null);
+        retryCountRef.current = 0;
+        setRetryCount(0);
         video.play().catch(() => {});
       });
       video.addEventListener("error", () => {
-        setLoading(false);
-        setError("Stream unavailable. Streamer may be offline.");
+        retryCountRef.current += 1;
+        setRetryCount(retryCountRef.current);
+        if (retryCountRef.current >= MAX_RETRIES) {
+          setLoading(false);
+          setError("Stream unavailable. Streamer may be offline.");
+        } else {
+          setLoading(true);
+          setError(null);
+        }
       });
     } else {
       setError("Your browser does not support HLS playback.");
@@ -65,6 +86,8 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
   }, [streamId]);
   useEffect(() => {
     if (!streamId) return;
+    retryCountRef.current = 0;
+    setRetryCount(0);
     startPlayer();
     retryTimerRef.current = setInterval(() => {
       const hls = hlsRef.current;
@@ -79,7 +102,6 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
           if (stateName === "ERROR" || hls.state === 13) {
             startPlayer();
           }
-        } else if (hls.bufferInfo) {
         }
       } catch {
         startPlayer();
@@ -89,17 +111,21 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
   }, [streamId, startPlayer, cleanup]);
   return (
     <div className="relative w-full h-full bg-black rounded-lg overflow-hidden">
-      {loading && (
+      {(loading || (error && retryCount < MAX_RETRIES)) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
           <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-3" />
-          <p className="text-sm text-gray-300">Connecting to stream...</p>
+          <p className="text-sm text-gray-300">
+            {retryCount === 0
+              ? "Connecting to stream..."
+              : `Connecting to stream... (retry ${retryCount}/${MAX_RETRIES})`}
+          </p>
         </div>
       )}
-      {error && !loading && (
+      {error && retryCount >= MAX_RETRIES && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-10">
           <p className="text-4xl mb-3">📡</p>
           <p className="text-sm text-gray-300 text-center px-4">{error}</p>
-          <p className="text-xs text-gray-500 mt-2">Retrying every 5 seconds...</p>
+          <p className="text-xs text-gray-500 mt-2">Stream may have ended</p>
         </div>
       )}
       <video
@@ -109,7 +135,6 @@ export default function StreamPlayer({ streamId, hlsUrl: overrideHlsUrl }) {
         muted
         playsInline
         className="w-full h-full object-contain"
-        style={{ display: error ? "none" : "block" }}
       />
     </div>
   );

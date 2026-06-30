@@ -15,7 +15,7 @@ export default function useChatbot() {
     setLoading(true);
     try {
       const token = getAuthToken();
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/gemini/chat`, { // ✅ FIXED ROUTE
         method: "POST",
         headers: {

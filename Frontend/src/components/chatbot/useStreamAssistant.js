@@ -24,7 +24,7 @@ export default function useStreamAssistant() {
 
     try {
       const token = getAuthToken();
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const apiUrl = import.meta.env.VITE_API_URL;
 
       // Add stream context to make suggestions more relevant
       const contextualPrompt = `
@@ -88,10 +88,8 @@ Format as a JSON array with "responses" key like: {"responses": ["Option 1", "Op
 
     try {
       const token = getAuthToken();
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-
+      const apiUrl = import.meta.env.VITE_API_URL;
       const contextualQuestion = `You are a professional streaming mentor. Answer this concisely: ${question}`;
-
       const response = await fetch(`${apiUrl}/gemini/chat`, {
         method: "POST",
         headers: {
